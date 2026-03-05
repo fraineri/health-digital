@@ -2,21 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 
-// Enum matches our schema.prisma Approach enum
-const parseApproach = (approachString?: string) => {
-  if (!approachString) return 'NONE';
-  const val = approachString.toUpperCase();
-  if (['CLINICAL', 'AYURVEDIC', 'BOTH', 'NONE'].includes(val)) return val;
-  return 'NONE';
-};
-
+// Cal.com usually sends the responses as an object where keys are the questions or keys.
+// We make a helper to extract responses from their generic payload.
 const extractResponses = (responses: Record<string, any>) => {
   // Agregamos el identifier 'motivoconsulta' que definiste en Cal.com
   const reasonForVisit = responses?.['reason_for_visit']?.value || responses?.['Motivo']?.value || responses?.['motivoconsulta']?.value || '';
-  const mainSymptoms = responses?.['main_symptoms']?.value || responses?.['Síntomas']?.value || '';
-  const preferredApproach = parseApproach(responses?.['preferred_approach']?.value || responses?.['Enfoque']?.value);
   
-  return { reasonForVisit, mainSymptoms, preferredApproach };
+  return { reasonForVisit };
 };
 
 export async function POST(req: NextRequest) {
@@ -107,16 +99,13 @@ export async function POST(req: NextRequest) {
 
       // 3. Create TriageResponses if they exist
       if (responses) {
-        const { reasonForVisit, mainSymptoms, preferredApproach } = extractResponses(responses);
+        const { reasonForVisit } = extractResponses(responses);
         
         // Use a simple create or we could try to upsert based on appointmentId if extending model
         await prisma.triageResponse.create({
           data: {
             appointmentId: appointment.id,
             reasonForVisit,
-            mainSymptoms,
-            // @ts-ignore Prisma enum Mapping
-            preferredApproach: preferredApproach, 
           }
         });
       }

@@ -37,8 +37,6 @@ model TriageResponse {
   appointmentId     String
   appointment       Appointment @relation(fields: [appointmentId], references: [id])
   reasonForVisit    String?
-  mainSymptoms      String?
-  preferredApproach Approach    @default(NONE)
   createdAt         DateTime    @default(now())
 }
 
@@ -47,11 +45,4 @@ enum BookingStatus {
   CONFIRMED
   CANCELLED
   DONE
-}
-
-enum Approach {
-  CLINICAL
-  AYURVEDIC
-  BOTH
-  NONE
 }
