@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  phone        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  appointments Appointment[]
+}
+
+model Appointment {
+  id              String          @id @default(uuid())
+  calBookingUid   String          @unique // External ID from Cal.com
+  patientId       String
+  patient         Patient         @relation(fields: [patientId], references: [id])
+  status          BookingStatus   @default(PENDING)
+  startTime       DateTime
+  endTime         DateTime
+  timeZone        String
+  meetingUrl      String?
+  triageResponses TriageResponse[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model TriageResponse {
+  id                String      @id @default(uuid())
+  appointmentId     String
+  appointment       Appointment @relation(fields: [appointmentId], references: [id])
+  reasonForVisit    String?
+  mainSymptoms      String?
+  preferredApproach Approach    @default(NONE)
+  createdAt         DateTime    @default(now())
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  DONE
+}
+
+enum Approach {
+  CLINICAL
+  AYURVEDIC
+  BOTH
+  NONE
+}
