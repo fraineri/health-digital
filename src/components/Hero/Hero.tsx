@@ -33,10 +33,10 @@ export default function Hero() {
           </p>
           
           <div className={styles.buttonGroup}>
-            <Link href="#reservar" className={styles.btnPrimary}>
+            <Link href="#booking" className={styles.btnPrimary}>
               Reservar Consulta
             </Link>
-            <Link href="#saber-mas" className={styles.btnOutline}>
+            <Link href="#como-funciona" className={styles.btnOutline}>
               Saber más
             </Link>
           </div>

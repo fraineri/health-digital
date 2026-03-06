@@ -23,6 +23,11 @@
   --container-padding: 2rem;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px; /* Offset for the sticky navbar */
+}
+
 /* Reset básico */
 * {
   box-sizing: border-box;

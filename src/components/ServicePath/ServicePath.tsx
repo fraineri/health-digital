@@ -42,7 +42,7 @@ export default function ServicePath() {
   ];
 
   return (
-    <section className={styles.serviceSection}>
+    <section className={styles.serviceSection} id="como-funciona">
       <div className={`container ${styles.container}`}>
         
         <div className={styles.header}>
