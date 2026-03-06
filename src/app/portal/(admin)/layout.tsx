@@ -1,35 +1,60 @@
+import { Calendar, Users, Settings, User as UserIcon } from "lucide-react";
+
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Sidebar Placeholder */}
-      <aside className="w-64 bg-white border-r border-slate-200 hidden md:block">
-        <div className="h-full px-4 py-6 overflow-y-auto">
-          <span className="text-xl font-bold tracking-tight">Portal CRM</span>
-          <nav className="mt-8 space-y-2">
-            <div className="block px-3 py-2 rounded-md bg-slate-100 font-medium text-sm text-slate-900">Dashboard</div>
-            <div className="block px-3 py-2 rounded-md hover:bg-slate-50 font-medium text-sm text-slate-600">Pacientes</div>
-          </nav>
+    <div className="flex h-screen bg-workspace overflow-hidden font-sans">
+      
+      {/* Column 1: Global Navigation Sidebar */}
+      <aside className="w-[80px] md:w-64 bg-sidebar text-sidebar-foreground flex flex-col shrink-0">
+        <div className="h-20 px-4 md:px-6 flex items-center justify-center md:justify-start border-b border-white/10 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-primary/20 rounded-xl flex border border-primary/30 items-center justify-center shrink-0">
+              <span className="text-primary font-bold text-lg">M</span>
+            </div>
+            <div className="hidden md:flex flex-col">
+              <span className="font-semibold text-sm">Dr. Admin</span>
+              <span className="text-xs text-sidebar-foreground/60">Medicina Integrativa</span>
+            </div>
+          </div>
+        </div>
+        
+        <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
+          {/* Navigation Items */}
+          <a href="/portal" className="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary/10 text-primary font-medium transition-colors">
+            <Calendar className="w-5 h-5" />
+            <span className="hidden md:inline text-sm">Agenda de Hoy</span>
+          </a>
+          <a href="#" className="flex items-center gap-3 px-3 py-3 rounded-xl text-sidebar-foreground/70 hover:bg-white/5 hover:text-sidebar-foreground transition-colors">
+            <Users className="w-5 h-5" />
+            <span className="hidden md:inline text-sm">Pacientes</span>
+          </a>
+          <a href="#" className="flex items-center gap-3 px-3 py-3 rounded-xl text-sidebar-foreground/70 hover:bg-white/5 hover:text-sidebar-foreground transition-colors">
+            <Settings className="w-5 h-5" />
+            <span className="hidden md:inline text-sm">Configuración</span>
+          </a>
+        </nav>
+
+        {/* User Profile Footer */}
+        <div className="p-4 md:p-6 border-t border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
+                 <UserIcon className="w-5 h-5 text-white/70" />
+            </div>
+            <div className="hidden md:flex flex-col">
+              <span className="text-sm font-medium">Dr. Alejandro M.</span>
+              <span className="text-xs text-sidebar-foreground/50">Sesión activa</span>
+            </div>
+          </div>
         </div>
       </aside>
       
-      <div className="flex flex-col flex-1 w-full overflow-hidden">
-        {/* Header Placeholder */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
-          <span className="font-semibold text-lg md:hidden">Portal CRM</span>
-          <div className="hidden md:block"></div>
-          <div className="flex items-center gap-4">
-            <div className="h-8 w-8 rounded-full bg-slate-200"></div>
-          </div>
-        </header>
-        
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          {children}
-        </main>
+      {/* Remaining Screen Area */}
+      <div className="flex flex-1 overflow-hidden">
+        {children}
       </div>
     </div>
   );

@@ -1,36 +1,49 @@
 @import "tailwindcss";
 
 @theme {
-  --color-border: hsl(var(--border) / <alpha-value>);
-  --color-input: hsl(var(--input) / <alpha-value>);
-  --color-ring: hsl(var(--ring) / <alpha-value>);
-  --color-background: hsl(var(--background) / <alpha-value>);
-  --color-foreground: hsl(var(--foreground) / <alpha-value>);
+  /* Bases */
+  --color-background: #ffffff;
+  --color-foreground: #1e293b; /* slate-800 */
+  --color-workspace: #f8f9fa;
 
-  --color-primary: hsl(var(--primary) / <alpha-value>);
-  --color-primary-foreground: hsl(var(--primary-foreground) / <alpha-value>);
+  /* Theme Colors */
+  --color-primary: #88987d; /* Sage Green */
+  --color-primary-foreground: #ffffff;
+  --color-sidebar: #1b202c; /* Navy Blue */
+  --color-sidebar-foreground: #f8fafc; /* slate-50 */
+  
+  /* Doshas */
+  --color-vata: #88987d;
+  --color-pitta: #d97757;
+  --color-kapha: #6ba4d9;
 
-  --color-secondary: hsl(var(--secondary) / <alpha-value>);
-  --color-secondary-foreground: hsl(var(--secondary-foreground) / <alpha-value>);
+  /* Standard Shadcn UI structural colors mapped to calm/earthy tones */
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #88987d;
 
-  --color-destructive: hsl(var(--destructive) / <alpha-value>);
-  --color-destructive-foreground: hsl(var(--destructive-foreground) / <alpha-value>);
+  --color-secondary: #f1f5f9; /* slate-100 */
+  --color-secondary-foreground: #334155; /* slate-700 */
 
-  --color-muted: hsl(var(--muted) / <alpha-value>);
-  --color-muted-foreground: hsl(var(--muted-foreground) / <alpha-value>);
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
 
-  --color-accent: hsl(var(--accent) / <alpha-value>);
-  --color-accent-foreground: hsl(var(--accent-foreground) / <alpha-value>);
+  --color-muted: #f8fafc;
+  --color-muted-foreground: #64748b;
 
-  --color-popover: hsl(var(--popover) / <alpha-value>);
-  --color-popover-foreground: hsl(var(--popover-foreground) / <alpha-value>);
+  --color-accent: #f1f5f9;
+  --color-accent-foreground: #0f172a;
 
-  --color-card: hsl(var(--card) / <alpha-value>);
-  --color-card-foreground: hsl(var(--card-foreground) / <alpha-value>);
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f172a;
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+
+  /* Elevated Radiuses for Pill/Soft aesthetic */
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
 }
 
 @layer base {
