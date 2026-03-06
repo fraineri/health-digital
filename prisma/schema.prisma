@@ -8,36 +8,38 @@ datasource db {
 }
 
 model Patient {
-  id           String        @id @default(uuid())
-  name         String
-  email        String        @unique
-  phone        String?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  appointments Appointment[]
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  phone         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  appointments  Appointment[]
+  consultations Consultation[]
 }
 
 model Appointment {
-  id              String          @id @default(uuid())
-  calBookingUid   String          @unique // External ID from Cal.com
+  id              String           @id @default(uuid())
+  calBookingUid   String           @unique // External ID from Cal.com
   patientId       String
-  patient         Patient         @relation(fields: [patientId], references: [id])
-  status          BookingStatus   @default(PENDING)
+  patient         Patient          @relation(fields: [patientId], references: [id])
+  status          BookingStatus    @default(PENDING)
   startTime       DateTime
   endTime         DateTime
   timeZone        String
   meetingUrl      String?
   triageResponses TriageResponse[]
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  consultation    Consultation?
 }
 
 model TriageResponse {
-  id                String      @id @default(uuid())
-  appointmentId     String
-  appointment       Appointment @relation(fields: [appointmentId], references: [id])
-  reasonForVisit    String?
-  createdAt         DateTime    @default(now())
+  id             String      @id @default(uuid())
+  appointmentId  String
+  appointment    Appointment @relation(fields: [appointmentId], references: [id])
+  reasonForVisit String?
+  createdAt      DateTime    @default(now())
 }
 
 enum BookingStatus {
@@ -45,4 +47,25 @@ enum BookingStatus {
   CONFIRMED
   CANCELLED
   DONE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  role      String   @default("DOCTOR")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Consultation {
+  id                 String       @id @default(uuid())
+  patientId          String
+  patient            Patient      @relation(fields: [patientId], references: [id])
+  appointmentId      String?      @unique
+  appointment        Appointment? @relation(fields: [appointmentId], references: [id])
+  encryptedNotes     String?
+  encryptedAnamnesis String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 }

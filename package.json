@@ -12,6 +12,7 @@
     "@calcom/embed-react": "^1.5.3",
     "@prisma/client": "^6.19.2",
     "next": "16.1.6",
+    "next-auth": "^5.0.0-beta.30",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
