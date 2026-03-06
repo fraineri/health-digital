@@ -1,0 +1,128 @@
+.aboutSection {
+  padding: 6rem 0;
+  background-color: var(--color-surface);
+  position: relative;
+  overflow: hidden;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+@media (min-width: 992px) {
+  .container {
+    grid-template-columns: 5fr 7fr;
+    gap: 6rem;
+  }
+}
+
+/* Image styling */
+.imageColumn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  aspect-ratio: 4/5;
+  border-radius: 12px;
+  background-color: var(--color-border);
+  z-index: 2;
+}
+
+.aboutImage {
+  object-fit: cover;
+  border-radius: 12px;
+  /* El filtro sutilmente cálido / sepia ayuda con el branding */
+}
+
+/* Forma orgánica para darle el toque premium/dinámico */
+.decorativeShape {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px 100px 30px 80px;
+  background-color: rgba(134, 150, 113, 0.15); /* var(--color-primary) con transparencia */
+  z-index: -1;
+  transform: rotate(-5deg);
+}
+
+@media (min-width: 768px) {
+  .decorativeShape {
+    top: -30px;
+    left: -40px;
+  }
+}
+
+/* Content styling */
+.contentColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 0.4rem 1rem;
+  background-color: rgba(134, 150, 113, 0.1);
+  color: var(--color-primary-hover);
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: 2.2rem;
+  color: var(--color-foreground);
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: 2.8rem;
+  }
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-size: 1.1rem;
+  color: #4b5563; /* Gris suave */
+  line-height: 1.7;
+}
+
+.description strong {
+  color: var(--color-foreground);
+  font-weight: 600;
+}
+
+.signature {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.doctorName {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--color-foreground);
+  margin-bottom: 0.25rem;
+}
+
+.doctorRole {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--color-primary);
+}
