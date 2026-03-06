@@ -1,10 +1,13 @@
-import { Calendar, Users, Settings, User as UserIcon } from "lucide-react";
+import { Calendar, Users, Settings, User as UserIcon, LogOut } from "lucide-react";
+import { auth, signOut } from "@/auth";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+
   return (
     <div className="flex h-screen bg-workspace overflow-hidden font-sans">
       
@@ -16,7 +19,7 @@ export default function AdminLayout({
               <span className="text-primary font-bold text-lg">M</span>
             </div>
             <div className="hidden md:flex flex-col">
-              <span className="font-semibold text-sm">Dr. Admin</span>
+              <span className="font-semibold text-sm">{session?.user?.name ?? "Doctor"}</span>
               <span className="text-xs text-sidebar-foreground/60">Medicina Integrativa</span>
             </div>
           </div>
@@ -38,17 +41,31 @@ export default function AdminLayout({
           </a>
         </nav>
 
-        {/* User Profile Footer */}
-        <div className="p-4 md:p-6 border-t border-white/10">
+        {/* User Profile Footer + Sign Out */}
+        <div className="p-4 md:p-6 border-t border-white/10 space-y-3">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                  <UserIcon className="w-5 h-5 text-white/70" />
             </div>
             <div className="hidden md:flex flex-col">
-              <span className="text-sm font-medium">Dr. Alejandro M.</span>
+              <span className="text-sm font-medium">{session?.user?.name ?? "Doctor"}</span>
               <span className="text-xs text-sidebar-foreground/50">Sesión activa</span>
             </div>
           </div>
+          <form
+            action={async () => {
+              "use server";
+              await signOut({ redirectTo: "/login" });
+            }}
+          >
+            <button
+              type="submit"
+              className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sidebar-foreground/50 hover:bg-white/5 hover:text-sidebar-foreground transition-colors text-sm"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden md:inline">Cerrar Sesión</span>
+            </button>
+          </form>
         </div>
       </aside>
       
