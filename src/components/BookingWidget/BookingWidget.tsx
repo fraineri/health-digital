@@ -12,6 +12,7 @@ export default function BookingWidget({ calLink = 'rick/15min' }: BookingWidgetP
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

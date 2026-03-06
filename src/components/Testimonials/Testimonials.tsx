@@ -48,7 +48,7 @@ export default function Testimonials() {
                   </svg>
                 ))}
               </div>
-              <blockquote className={styles.quote}>"{testimonial.quote}"</blockquote>
+              <blockquote className={styles.quote}>&quot;{testimonial.quote}&quot;</blockquote>
               <div className={styles.author}>
                 <div className={styles.avatarPlaceholder}>
                   {testimonial.name.charAt(0)}

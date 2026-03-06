@@ -4,13 +4,12 @@ interface DoshaCardProps {
   name: string;
   element: string;
   icon: LucideIcon;
-  colorClass: string;
   bgClass: string;
   active?: boolean;
   level: number; // 0 to 100
 }
 
-export function DoshaCard({ name, element, icon: Icon, colorClass, bgClass, active, level }: DoshaCardProps) {
+export function DoshaCard({ name, element, icon: Icon, bgClass, active, level }: DoshaCardProps) {
   return (
     <div
       className={`relative flex flex-col items-center p-6 rounded-2xl border transition-all cursor-pointer ${

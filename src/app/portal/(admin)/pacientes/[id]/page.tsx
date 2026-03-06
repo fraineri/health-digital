@@ -2,12 +2,40 @@ import { AppointmentInbox } from "@/components/portal/AppointmentInbox";
 import { DoshaCard } from "@/components/portal/DoshaCard";
 import { ClinicalNotesArea } from "@/components/portal/ClinicalNotes";
 import { Wind, Flame, Droplets, History, Share2, Sparkles, FileText, ArrowRight, ChevronDown } from "lucide-react";
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
 
-export default function WorkspacePage() {
+export default async function SelectedPatientPage({
+  params
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
+
+  // Retrieve the patient
+  const patient = await prisma.patient.findUnique({
+    where: { id },
+    include: {
+      appointments: {
+        orderBy: { startTime: 'desc' },
+        take: 1,
+        include: { triageResponses: true }
+      }
+    }
+  });
+
+  if (!patient) {
+    return notFound();
+  }
+
+  const latestAppointment = patient.appointments[0];
+  const triage = latestAppointment?.triageResponses?.[0];
+
   return (
     <>
       {/* Column 2: Inbox/Queue (Real Data Server Component) */}
-      <AppointmentInbox />
+      <AppointmentInbox activePatientId={id} />
 
       {/* Column 3: Clinical Workspace */}
       <div className="flex-1 bg-workspace relative flex flex-col h-full overflow-hidden">
@@ -15,12 +43,13 @@ export default function WorkspacePage() {
         <header className="px-10 py-8 shrink-0 flex items-start justify-between">
           <div>
             <div className="flex items-center gap-4 mb-2">
-              <h1 className="text-4xl font-bold tracking-tight text-slate-900">Juan Pérez</h1>
-              <span className="px-3 py-1 rounded-full bg-slate-200/50 text-slate-600 text-sm font-medium">34 años</span>
+              <h1 className="text-4xl font-bold tracking-tight text-slate-900">{patient.name}</h1>
+              {/* Optional: we could calculate age if we had dateOfBirth, using a mocked tag for aesthetics */}
+              <span className="px-3 py-1 rounded-full bg-slate-200/50 text-slate-600 text-sm font-medium">Paciente</span>
             </div>
             <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
               <FileText className="w-4 h-4" />
-              <span>Motivo de consulta: Reflujo crónico y fatiga estacional.</span>
+              <span>Motivo de consulta: {triage?.reasonForVisit || "No especificado en el cuestionario previo."}</span>
             </div>
           </div>
           
@@ -41,22 +70,21 @@ export default function WorkspacePage() {
                 element="Aire y Espacio"
                 icon={Wind}
                 bgClass="bg-vata"
-                level={80}
-                active
+                level={30}
               />
               <DoshaCard 
                 name="Pitta" 
                 element="Fuego y Agua"
                 icon={Flame}
                 bgClass="bg-pitta"
-                level={40}
+                level={30}
               />
               <DoshaCard 
                 name="Kapha" 
                 element="Tierra y Agua"
                 icon={Droplets}
                 bgClass="bg-kapha"
-                level={20}
+                level={30}
               />
             </div>
           </section>
@@ -74,7 +102,9 @@ export default function WorkspacePage() {
                   <label className="text-sm font-semibold text-slate-700">Enfoque Nutricional</label>
                   <div className="relative">
                     <select className="w-full h-12 bg-white border border-border/60 rounded-xl px-4 appearance-none text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm">
+                      <option>Seleccione un Enfoque</option>
                       <option>Dieta Anti-Vata (Pacificadora)</option>
+                      <option>Dieta Anti-Pitta</option>
                       <option>Dieta Tridoshica</option>
                     </select>
                     <ChevronDown className="absolute right-4 top-3.5 w-5 h-5 text-slate-400 pointer-events-none" />
@@ -85,6 +115,7 @@ export default function WorkspacePage() {
                   <label className="text-sm font-semibold text-slate-700">Fitoterapia & Suplementos</label>
                   <div className="relative">
                     <select className="w-full h-12 bg-white border border-border/60 rounded-xl px-4 appearance-none text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm">
+                      <option>Seleccione Suplementos</option>
                       <option>Triphala + Ashwagandha (PM)</option>
                       <option>Brahmi + Shatavari</option>
                     </select>
@@ -96,6 +127,7 @@ export default function WorkspacePage() {
                   <label className="text-sm font-semibold text-slate-700">Rutina Sugerida (Dinacharya)</label>
                   <div className="relative">
                     <select className="w-full h-12 bg-white border border-border/60 rounded-xl px-4 appearance-none text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm">
+                      <option>Seleccione Rutina</option>
                       <option>Rutina de Mañana Vata: Oleación</option>
                     </select>
                     <ChevronDown className="absolute right-4 top-3.5 w-5 h-5 text-slate-400 pointer-events-none" />
@@ -114,10 +146,10 @@ export default function WorkspacePage() {
 
         {/* Floating Actions Overlays */}
         <div className="absolute bottom-8 right-10 flex flex-col items-end gap-4 pointer-events-none">
-          {/* AI Pill */}
+          {/* AI Pill - We leave this mock static as requested */}
           <div className="bg-white px-5 py-3 rounded-full border border-border shadow-sm flex items-center gap-3 pointer-events-auto cursor-pointer hover:bg-slate-50 transition-colors">
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-bold text-slate-700">IA sugiere: Reducir estimulantes</span>
+            <span className="text-sm font-bold text-slate-700">IA sugiere: Explorar historial previo</span>
           </div>
           
           {/* Primary Action Button */}

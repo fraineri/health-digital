@@ -8,14 +8,22 @@ datasource db {
 }
 
 model Patient {
-  id            String         @id @default(uuid())
-  name          String
-  email         String         @unique
-  phone         String?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  appointments  Appointment[]
-  consultations Consultation[]
+  id              String         @id @default(uuid())
+  name            String
+  email           String         @unique
+  phone           String?
+  dateOfBirth     DateTime?
+  gender          String?
+  vulnerableGroup String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  appointments    Appointment[]
+  consultations   Consultation[]
+}
+
+enum AppointmentType {
+  FIRST_CONSULTATION
+  FOLLOW_UP
 }
 
 model Appointment {
@@ -24,10 +32,15 @@ model Appointment {
   patientId       String
   patient         Patient          @relation(fields: [patientId], references: [id])
   status          BookingStatus    @default(PENDING)
+  appointmentType AppointmentType  @default(FIRST_CONSULTATION)
+  eventTypeSlug   String?
   startTime       DateTime
   endTime         DateTime
   timeZone        String
   meetingUrl      String?
+  location        String?
+  cancelledAt     DateTime?
+  rescheduledFrom String?
   triageResponses TriageResponse[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -39,6 +52,7 @@ model TriageResponse {
   appointmentId  String
   appointment    Appointment @relation(fields: [appointmentId], references: [id])
   reasonForVisit String?
+  rawResponses   Json?
   createdAt      DateTime    @default(now())
 }
 
@@ -46,6 +60,7 @@ enum BookingStatus {
   PENDING
   CONFIRMED
   CANCELLED
+  RESCHEDULED
   DONE
 }
 
