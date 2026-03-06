@@ -5,13 +5,14 @@ import { Wind, Flame, Droplets, History, Share2, Sparkles, FileText, ArrowRight,
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+
 export default async function SelectedPatientPage({
   params
 }: {
-  params: Promise<{ id: string }>
+  params: { id: string }
 }) {
-  const resolvedParams = await params;
-  const { id } = resolvedParams;
+  const { id } = params;
 
   // Retrieve the patient
   const patient = await prisma.patient.findUnique({
@@ -26,8 +27,11 @@ export default async function SelectedPatientPage({
   });
 
   if (!patient) {
+    console.error(`[SelectedPatientPage] Patient NOT FOUND for ID: "${id}"`);
     return notFound();
   }
+
+  console.log(`[SelectedPatientPage] Patient FOUND: ${patient.id} - ${patient.name}`);
 
   const latestAppointment = patient.appointments[0];
   const triage = latestAppointment?.triageResponses?.[0];
