@@ -8,7 +8,7 @@ export async function authenticate(
   formData: FormData,
 ) {
   try {
-    await signIn("credentials", formData, { redirectTo: "/" });
+    await signIn("credentials", formData, { redirectTo: "/portal" });
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {

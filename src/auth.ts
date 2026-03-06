@@ -1,6 +1,10 @@
 import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/prisma";
+import { authConfig } from "./auth.config";
 
+/* ── Type Augmentation ───────────────────────────────── */
 declare module "next-auth" {
   interface User {
     role?: string;
@@ -8,53 +12,43 @@ declare module "next-auth" {
   interface Session {
     user: {
       role?: string;
-    } & DefaultSession["user"]
+    } & DefaultSession["user"];
   }
 }
 
-
+/* ── NextAuth Instance ───────────────────────────────── */
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "dr@ejemplo.com" },
-        password: { label: "Password", type: "password" }
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials) => {
-        // Validación en duro para el desarrollo inicial hasta tener prisma
-        const user = { id: "1", name: "Doctor", email: "admin@portal.com", role: "admin" }
-        
-        if (credentials?.email === "admin@portal.com" && credentials?.password === "admin123") {
-          return user;
-        }
-        
-        return null;
-      }
-    })
+      async authorize(credentials) {
+        const email = credentials?.email as string | undefined;
+        const password = credentials?.password as string | undefined;
+
+        if (!email || !password) return null;
+
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
+
+        if (!user) return null;
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) return null;
+
+        // Return the user object that NextAuth will encode into the JWT
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
+      },
+    }),
   ],
-  pages: {
-    signIn: "/login",
-  },
-  session: {
-    strategy: "jwt",
-  },
-  callbacks: {
-    authorized: async ({ auth }) => {
-      // Simplemente retornamos si hay sesión
-      return !!auth;
-    },
-    jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
-      }
-      return token;
-    },
-    session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as string;
-      }
-      return session;
-    }
-  },
 });
