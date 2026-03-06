@@ -60,6 +60,13 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.card:hover .iconWrapper {
+  background-color: var(--color-primary);
+  color: white;
+  transform: scale(1.05);
 }
 
 .stepNumber {
