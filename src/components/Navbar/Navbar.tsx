@@ -30,7 +30,7 @@ export default function Navbar() {
 
         {/* CTA Button */}
         <div className={styles.ctaWrapper}>
-          <Link href="#reservar" className={styles.buttonCta}>
+          <Link href="#booking" className={styles.buttonCta}>
             Reservar Consulta
           </Link>
         </div>
