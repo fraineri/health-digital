@@ -10,7 +10,7 @@ export default function AboutMe() {
           <div className={styles.imageWrapper}>
             {/* Usamos un placeholder ilustrativo, el usuario lo puede cambiar luego */}
             <Image
-              src="/doctora-retrato.jpg" /* Idealmente el usuario sube su propia foto aquí */
+              src="/doctora-retrato.png" /* Idealmente el usuario sube su propia foto aquí */
               alt="Dra. especialista en medicina integrativa"
               fill
               className={styles.aboutImage}
