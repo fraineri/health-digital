@@ -130,20 +130,21 @@ export function ConsultationWorkspace({
     // But as per design, Workspace lives in column 3.
     <div className="flex flex-1 overflow-hidden">
       
-      {/* Scrollable Work Area */}
-      <div className="flex-1 overflow-y-auto px-10 pb-40">
+      {/* Split-Pane Work Area */}
+      <div className="flex-1 overflow-hidden h-full w-full">
         
         {/* Error Notification if any */}
         {errorMsg && (
-          <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl border border-red-200 text-sm font-medium">
+          <div className="mx-10 mt-6 mb-2 p-4 bg-red-50 text-red-600 rounded-xl border border-red-200 text-sm font-medium shrink-0">
              Error: {errorMsg}
           </div>
         )}
 
-        <div className="grid grid-cols-12 gap-10">
+        {/* Global Grid container occupying full height */}
+        <div className="grid grid-cols-12 h-full w-full">
           
-          {/* ---- Left Area: Symptoms ---- */}
-          <div className="col-span-12 xl:col-span-4 border-r border-border/40 pr-6 space-y-8">
+          {/* ---- Left Area: Symptoms (Scrollable) ---- */}
+          <div className="col-span-12 lg:col-span-4 border-r border-border/40 h-full overflow-y-auto pl-10 pr-6 pt-6 pb-40 !custom-scrollbar scroll-smooth">
             <section>
               <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase flex items-center gap-2">
                 <Activity className="w-4 h-4" /> Checklist Activo
@@ -155,8 +156,8 @@ export function ConsultationWorkspace({
             </section>
           </div>
 
-          {/* ---- Right Area: Sliders & Treatment ---- */}
-          <div className="col-span-12 xl:col-span-8 flex flex-col gap-12 pt-1">
+          {/* ---- Right Area: Sliders & Treatment (Scrollable) ---- */}
+          <div className="col-span-12 lg:col-span-8 flex flex-col gap-12 h-full overflow-y-auto pl-10 pr-10 pt-6 pb-40 !custom-scrollbar scroll-smooth">
             
             {/* 1. Diagnostic */}
             <section>
