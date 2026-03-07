@@ -106,7 +106,9 @@ export default function WorkspacePage() {
 
               {/* Right Column: Notes Block */}
               <div className="col-span-7">
-                <ClinicalNotesArea />
+                <div className="w-full h-full min-h-[160px] bg-sidebar/5 rounded-xl border border-border/40 flex items-center justify-center">
+                  <span className="text-sm text-slate-400">Seleccione un paciente de la fila para cargar la ficha clínica completa y ver las notas.</span>
+                </div>
               </div>
             </div>
           </section>

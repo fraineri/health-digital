@@ -54,8 +54,8 @@ export async function AppointmentInbox({ activePatientId }: { activePatientId?: 
                 patientId={apt.patientId}
                 time={timeStr}
                 name={apt.patient.name}
-                appointmentType={apt.appointmentType}
                 reasonForVisit={triage?.reasonForVisit}
+                bookingStatus={apt.status}
                 status={status}
                 active={activePatientId === apt.patientId}
               />

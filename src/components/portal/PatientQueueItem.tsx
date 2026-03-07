@@ -9,8 +9,8 @@ interface PatientQueueItemProps {
   patientId: string; // Patient ID
   time: string;
   name: string;
-  appointmentType: AppointmentType;
   reasonForVisit?: string | null;
+  bookingStatus?: string; // e.g. "DONE"
   status: "now" | "upcoming" | "past";
   active?: boolean;
 }
@@ -24,8 +24,8 @@ export function PatientQueueItem({
   patientId,
   time, 
   name, 
-  appointmentType,
   reasonForVisit,
+  bookingStatus,
   status, 
   active 
 }: PatientQueueItemProps) {
@@ -39,8 +39,7 @@ export function PatientQueueItem({
     });
   };
 
-  const typeLabel = TYPE_TRANSLATIONS[appointmentType] || "Consulta";
-  const displayType = reasonForVisit ? `${typeLabel} — ${reasonForVisit}` : typeLabel;
+  const displayType = reasonForVisit || "Consulta General";
 
   return (
     <div
@@ -60,8 +59,10 @@ export function PatientQueueItem({
           <span className="text-xs font-medium text-slate-400">{time}</span>
         )}
         
-        {status === "now" && (
-          <span className="text-xs font-medium text-slate-400">{time}</span>
+        {bookingStatus === "DONE" && (
+           <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-sm border border-emerald-200">
+             COMPLETADA
+           </span>
         )}
       </div>
       
@@ -76,7 +77,7 @@ export function PatientQueueItem({
         <button 
           className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs font-medium py-2 rounded-md transition-colors shadow-sm"
         >
-          {isPending ? "Cargando..." : "Abrir Ficha"}
+          {isPending ? "Cargando..." : (bookingStatus === "DONE" ? "Ver Consulta" : "Abrir Ficha")}
         </button>
       ) : (
         <span className="text-xs font-medium text-primary cursor-pointer hover:underline">
