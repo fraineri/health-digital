@@ -170,6 +170,7 @@ export function ConsultationWorkspace({
                   suggestedLevel={suggestedScores.vata}
                   level={displayVata}
                   onChange={setVataFinal}
+                  onReset={() => setVataFinal(null)}
                   active={displayVata > displayPitta && displayVata > displayKapha}
                 />
                 <DoshaSlider 
@@ -180,6 +181,7 @@ export function ConsultationWorkspace({
                   suggestedLevel={suggestedScores.pitta}
                   level={displayPitta}
                   onChange={setPittaFinal}
+                  onReset={() => setPittaFinal(null)}
                   active={displayPitta > displayVata && displayPitta > displayKapha}
                 />
                 <DoshaSlider 
@@ -190,6 +192,7 @@ export function ConsultationWorkspace({
                   suggestedLevel={suggestedScores.kapha}
                   level={displayKapha}
                   onChange={setKaphaFinal}
+                  onReset={() => setKaphaFinal(null)}
                   active={displayKapha > displayVata && displayKapha > displayPitta}
                 />
               </div>

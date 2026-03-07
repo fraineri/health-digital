@@ -1,6 +1,6 @@
 "use client";
 
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, RotateCcw } from "lucide-react";
 
 interface DoshaSliderProps {
   name: string;
@@ -10,6 +10,7 @@ interface DoshaSliderProps {
   suggestedLevel: number;
   level: number;
   onChange: (newLevel: number) => void;
+  onReset?: () => void;
   active?: boolean;
 }
 
@@ -21,6 +22,7 @@ export function DoshaSlider({
   suggestedLevel, 
   level, 
   onChange,
+  onReset,
   active 
 }: DoshaSliderProps) {
   
@@ -35,8 +37,19 @@ export function DoshaSlider({
       }`}
     >
       {isManuallyAdjusted && (
-        <div className="absolute top-3 right-3 bg-slate-100 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm border border-slate-200">
-          Ajustado
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          <div className="bg-slate-100 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm border border-slate-200">
+            Ajustado
+          </div>
+          {onReset && (
+            <button
+              onClick={onReset}
+              className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
+              title="Restaurar valor sugerido IA"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       )}
 
