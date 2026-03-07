@@ -80,8 +80,28 @@ model Consultation {
   patient            Patient      @relation(fields: [patientId], references: [id])
   appointmentId      String?      @unique
   appointment        Appointment? @relation(fields: [appointmentId], references: [id])
+  // — Dosha Scoring (Motor) —
+  vataSuggested      Float?       // Valor sugerido por el motor (0-100)
+  pittaSuggested     Float?
+  kaphaSuggested     Float?
+  vataFinal          Float?       // Valor final decidido por la médica
+  pittaFinal         Float?
+  kaphaFinal         Float?
+
+  // — Treatment Plan (Selects) —
+  nutritionPlan      String?      // Ej: "Dieta Anti-Vata (Pacificadora)"
+  phytotherapy       String?      // Ej: "Triphala + Ashwagandha (PM)"
+  dailyRoutine       String?      // Ej: "Rutina de Mañana Vata: Oleación"
+
+  // — Clinical Notes (Encriptados) —
   encryptedNotes     String?
   encryptedAnamnesis String?
+  encryptedDiagnosis String?
+
+  // — Symptom Scores (snapshot del checklist) —
+  symptomSnapshot    Json?        // Snapshot de los síntomas marcados
+
+  // — Metadata —
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 }
