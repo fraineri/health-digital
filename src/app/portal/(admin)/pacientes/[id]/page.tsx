@@ -10,9 +10,10 @@ export const dynamic = 'force-dynamic';
 export default async function SelectedPatientPage({
   params
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
-  const { id } = params;
+  const resolvedParams = await params;
+  const { id } = resolvedParams;
 
   // Retrieve the patient
   const patient = await prisma.patient.findUnique({

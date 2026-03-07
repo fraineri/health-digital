@@ -25,6 +25,9 @@ export async function handleBookingCreated(eventData: Record<string, unknown>) {
     eventType
   } = eventData as unknown as CalEventData;
   
+  console.log(`[Webhook] Processing BOOKING_CREATED for uid: ${uid}`);
+  console.log(`[Webhook] Event Payload:`, JSON.stringify(eventData, null, 2));
+  
   const attendee = attendees?.[0]; // Usually the patient is the first attendee
   if (!attendee) {
     throw new Error('No attendees found in BOOKING_CREATED event');
@@ -46,6 +49,8 @@ export async function handleBookingCreated(eventData: Record<string, unknown>) {
       email: attendee.email,
     }
   });
+
+  console.log(`[Webhook] Upserted Patient: ${patient.id} - ${patient.email}`);
 
   // 2. Upsert Appointment (Idempotency check via uid)
   const appointment = await prisma.appointment.upsert({
@@ -71,6 +76,8 @@ export async function handleBookingCreated(eventData: Record<string, unknown>) {
       eventTypeSlug: eventType?.slug,
     }
   });
+
+  console.log(`[Webhook] Upserted Appointment: ${appointment.id} linked to Patient: ${appointment.patientId}`);
 
   // 3. Create TriageResponse if we have meaningful data
   if (responses) {
