@@ -10,37 +10,41 @@ export interface DoshaScores {
  * Motor de Scoring Dóshico puro.
  * Calcula los puntajes de Vata, Pitta y Kapha basados en los síntomas seleccionados.
  *
- * Fórmula: S_d = Σ (checked_i × W_d_i)
+ * Fórmula: S_d = Σ (checked_i × W_d_i × Intensidad_i)
  * Normalización: Score_d% = (S_d / Σ S_all) × 100
  *
- * @param checkedSymptomIds Array de IDs de los síntomas macados
+ * @param symptomIntensities Record mapeando ID del síntoma a su intensidad (0=Ausente, 1=Leve, 2=Moderado, 3=Severo)
  * @returns Score normalizado para Vata, Pitta y Kapha (0-100)
  */
-export function calculateDoshaScores(checkedSymptomIds: string[]): DoshaScores {
+export function calculateDoshaScores(symptomIntensities: Record<string, number>): DoshaScores {
   // Edge case: if nothing is checked, distribute equally
-  if (!checkedSymptomIds || checkedSymptomIds.length === 0) {
+  if (!symptomIntensities || Object.keys(symptomIntensities).length === 0) {
     return { vata: 33.3, pitta: 33.3, kapha: 33.3 };
   }
 
-  // Filter catalog to get only checked symptoms
+  // Filter catalog to get only checked symptoms (intensity > 0)
+  const activeSymptomIds = Object.keys(symptomIntensities).filter(id => symptomIntensities[id] > 0);
+  
   const selectedSymptoms = SYMPTOM_CATALOG.filter((symptom) =>
-    checkedSymptomIds.includes(symptom.id)
+    activeSymptomIds.includes(symptom.id)
   );
 
-  // Still handle edge case if none of the IDs match somehow
+  // Still handle edge case if none of the IDs match somehow or all intensities are 0
   if (selectedSymptoms.length === 0) {
     return { vata: 33.3, pitta: 33.3, kapha: 33.3 };
   }
 
-  // Sum raw weights
+  // Sum raw weights multiplied by intensity
   let rawVata = 0;
   let rawPitta = 0;
   let rawKapha = 0;
 
   for (const symptom of selectedSymptoms) {
-    rawVata += symptom.weights.vata;
-    rawPitta += symptom.weights.pitta;
-    rawKapha += symptom.weights.kapha;
+    const intensity = symptomIntensities[symptom.id] || 0;
+    
+    rawVata += symptom.weights.vata * intensity;
+    rawPitta += symptom.weights.pitta * intensity;
+    rawKapha += symptom.weights.kapha * intensity;
   }
 
   const totalRaw = rawVata + rawPitta + rawKapha;

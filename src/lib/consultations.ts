@@ -17,7 +17,7 @@ export interface DecryptedConsultation {
   notes: string | null;
   anamnesis: string | null;
   diagnosis: string | null;
-  symptomSnapshot: any | null;
+  symptomSnapshot: Record<string, number> | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -63,7 +63,7 @@ export async function getConsultationByAppointmentId(
     nutritionPlan: consultation.nutritionPlan,
     phytotherapy: consultation.phytotherapy,
     dailyRoutine: consultation.dailyRoutine,
-    symptomSnapshot: consultation.symptomSnapshot,
+    symptomSnapshot: consultation.symptomSnapshot as Record<string, number> | null,
     notes,
     anamnesis,
     diagnosis,

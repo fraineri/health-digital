@@ -25,11 +25,13 @@ export function ConsultationWorkspace({
 }: ConsultationWorkspaceProps) {
   // --- 1. State Initialization ---
   
-  // Array of symptom IDs
-  const rawCheckedSymptoms = initialData?.symptomSnapshot;
-  const initialCheckedSymptoms = Array.isArray(rawCheckedSymptoms) ? rawCheckedSymptoms : [];
+  // Mapping of symptom ID to its intensity (0-3)
+  const rawIntensities = initialData?.symptomSnapshot;
+  const initialIntensities = (typeof rawIntensities === 'object' && rawIntensities !== null && !Array.isArray(rawIntensities)) 
+    ? (rawIntensities as Record<string, number>)
+    : {};
   
-  const [checkedSymptomIds, setCheckedSymptomIds] = useState<string[]>(initialCheckedSymptoms);
+  const [symptomIntensities, setSymptomIntensities] = useState<Record<string, number>>(initialIntensities);
   
   // Dosha manual overrides. Null means "use suggested"
   const [vataFinal, setVataFinal] = useState<number | null>(initialData?.vataFinal ?? null);
@@ -50,8 +52,8 @@ export function ConsultationWorkspace({
 
   // --- 2. Derived State ---
   
-  // Calculate engine suggestions based on current checkboxes
-  const suggestedScores = useMemo(() => calculateDoshaScores(checkedSymptomIds), [checkedSymptomIds]);
+  // Calculate engine suggestions based on current symptom intensities
+  const suggestedScores = useMemo(() => calculateDoshaScores(symptomIntensities), [symptomIntensities]);
   
   // Which values to display on the sliders (fallback to suggestion if no final override)
   // If it's a new consultation, fallback to suggestion. If we loaded existing data, and they didn't have an override, fallback to suggestion.
@@ -60,19 +62,23 @@ export function ConsultationWorkspace({
   const displayPitta = pittaFinal !== null ? pittaFinal : suggestedScores.pitta;
   const displayKapha = kaphaFinal !== null ? kaphaFinal : suggestedScores.kapha;
 
-  // Extract labels for smart tags inside notes, based on selected symptoms
+  // Extract labels for smart tags inside notes, based on selected symptoms (intensity > 0)
   const activeSymptomLabels = useMemo(() => {
     return SYMPTOM_CATALOG
-      .filter(s => checkedSymptomIds.includes(s.id))
-      .map(s => s.label.split(" / ")[0]); // take short string easily readable
-  }, [checkedSymptomIds]);
+      .filter(s => symptomIntensities[s.id] > 0)
+      .map(s => {
+        const baseLabel = s.label.split(" / ")[0];
+        const intensity = symptomIntensities[s.id];
+        const suffix = intensity === 3 ? " (Agudo)" : intensity === 2 ? " (Mod)" : " (Leve)";
+        return `${baseLabel}${suffix}`;
+      });
+  }, [symptomIntensities]);
 
   // Protect against accidental closure if dirty
   const isDirty = useMemo(() => {
-     // Simplified dirty check: if there are checked symptoms or any notes modified, consider it dirty.
-     // Could be enhanced by doing a deep deep equal.
-     return checkedSymptomIds.length > 0 || notes !== "" || vataFinal !== null;
-  }, [checkedSymptomIds, notes, vataFinal]);
+     const hasSymptoms = Object.values(symptomIntensities).some(val => val > 0);
+     return hasSymptoms || notes !== "" || vataFinal !== null;
+  }, [symptomIntensities, notes, vataFinal]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -95,7 +101,7 @@ export function ConsultationWorkspace({
       const input: SaveConsultationInput = {
         patientId,
         appointmentId,
-        checkedSymptomIds,
+        symptomIntensities,
         vataFinal: displayVata,
         pittaFinal: displayPitta,
         kaphaFinal: displayKapha,
@@ -143,8 +149,8 @@ export function ConsultationWorkspace({
                 <Activity className="w-4 h-4" /> Checklist Activo
               </h3>
               <SymptomChecklist 
-                checkedIds={checkedSymptomIds} 
-                onChange={setCheckedSymptomIds} 
+                intensities={symptomIntensities} 
+                onChange={setSymptomIntensities} 
               />
             </section>
           </div>

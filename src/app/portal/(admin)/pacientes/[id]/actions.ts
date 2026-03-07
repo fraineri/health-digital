@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 export interface SaveConsultationInput {
   patientId: string;
   appointmentId?: string;
-  checkedSymptomIds: string[];
+  symptomIntensities: Record<string, number>;
   vataFinal: number;
   pittaFinal: number;
   kaphaFinal: number;
@@ -25,7 +25,7 @@ export async function saveConsultation(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // 1. Recalcular scores sugeridos usando la función pura
-    const suggestedScores = calculateDoshaScores(input.checkedSymptomIds);
+    const suggestedScores = calculateDoshaScores(input.symptomIntensities);
 
     // 2. Encriptar notas y campos clínicos
     const encryptedNotes = input.notes ? encrypt(input.notes) : null;
@@ -57,7 +57,7 @@ export async function saveConsultation(
       nutritionPlan: input.nutritionPlan,
       phytotherapy: input.phytotherapy,
       dailyRoutine: input.dailyRoutine,
-      symptomSnapshot: input.checkedSymptomIds, // JSON array for audit tracking
+      symptomSnapshot: input.symptomIntensities, // JSON mapping for audit tracking
       encryptedNotes,
       encryptedAnamnesis,
       encryptedDiagnosis,
