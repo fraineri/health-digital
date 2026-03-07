@@ -35,7 +35,7 @@ export function PatientQueueItem({
   const handleOpenRecord = () => {
     // Optimistically show feedback or transition immediately
     startTransition(() => {
-      router.push(`/portal/pacientes/${patientId}`);
+      router.push(`/pacientes/${patientId}`);
     });
   };
 

@@ -27,7 +27,7 @@ export default async function AdminLayout({
         
         <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
           {/* Navigation Items */}
-          <a href="/portal" className="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary/10 text-primary font-medium transition-colors">
+          <a href="/" className="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary/10 text-primary font-medium transition-colors">
             <Calendar className="w-5 h-5" />
             <span className="hidden md:inline text-sm">Agenda de Hoy</span>
           </a>
