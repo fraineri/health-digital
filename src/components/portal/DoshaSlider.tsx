@@ -38,13 +38,10 @@ export function DoshaSlider({
     >
       {isManuallyAdjusted && (
         <div className="absolute top-3 right-3 flex items-center gap-1.5">
-          <div className="bg-slate-100 text-slate-500 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm border border-slate-200">
-            Ajustado
-          </div>
           {onReset && (
             <button
               onClick={onReset}
-              className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
+              className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors shadow-sm bg-white border border-slate-200"
               title="Restaurar valor sugerido IA"
             >
               <RotateCcw className="w-3.5 h-3.5" />
