@@ -38,15 +38,18 @@ export async function handleBookingCreated(eventData: Record<string, unknown>) {
   const appointmentType = resolveAppointmentType(eventType?.slug);
 
   // 1. Upsert Patient
+  // Regla confirmada: Cal.com solo pre-puebla campos al crear. 
+  // Nunca sobreescribe si el paciente ya existe en nuestra DB.
   const patient = await prisma.patient.upsert({
     where: { email: attendee.email },
     update: {
-      name: attendee.name,
-      // No acualizamos el teléfono con timezone (bug fix) - Dejamos que preserve el original o quede null
+      // Intencionalmente vacío: nunca sobreescribir datos existentes
     },
     create: {
       name: attendee.name,
       email: attendee.email,
+      phone: attendee.phoneNumber || null,
+      profileSource: 'CAL_COM',
     }
   });
 

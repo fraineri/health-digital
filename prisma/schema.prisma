@@ -8,17 +8,34 @@ datasource db {
 }
 
 model Patient {
-  id              String         @id @default(uuid())
-  name            String
-  email           String         @unique
-  phone           String?
-  dateOfBirth     DateTime?
-  gender          String?
-  vulnerableGroup String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  appointments    Appointment[]
-  consultations   Consultation[]
+  id                      String         @id @default(uuid())
+  name                    String
+  email                   String         @unique
+  phone                   String?
+  dateOfBirth             DateTime?
+  gender                  String?
+  vulnerableGroup         String?
+  
+  // — Perfil Médico y Administrativo —
+  occupation              String?
+  address                 String?
+  bloodType               String?
+  encryptedMedicalHistory String?
+  encryptedAllergies      String?
+  lifestyle               Json?
+  emergencyContactName    String?
+  emergencyContactPhone   String?
+  
+  // — Meta Data de Perfil —
+  profileSource           String?        // Ej. "CAL_COM" o "PORTAL"
+  lastProfileUpdate       DateTime?
+  
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+  
+  // Relaciones
+  appointments            Appointment[]
+  consultations           Consultation[]
 }
 
 enum AppointmentType {

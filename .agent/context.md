@@ -104,3 +104,20 @@ Se diseñó e implementó la vista principal para realizar consultas ayurvédica
 - El guardado ocurre con un "SaveButton" flotante asincrónico optimista (`useTransition`). 
 - El `Server Action` de `saveConsultation` aprovecha el wrapper de `encrypt` (AES-256-GCM). Solo los datos analíticos "duros" (cantidades e índices) se guardan limpios; campos sensibles como `anamnesis`, `diagnosis`, `notes` (donde se generan los **Smart Tags automáticos**) se encriptan al ingresar a NeonDB.
 - Se previene la pérdida accidental invocando el hook `beforeunload` cuando `isDirty` es `true` y el form no se guardó con éxito.
+
+### Sesión 2026-03-07 — Módulo de Perfil de Paciente (Estático)
+
+Se diseñó e implementó el módulo para recolectar datos demográficos, antecedentes y estilo de vida.
+
+**1. Data Layer & Encriptación Extendida:**
+- Modelo `Patient` extendido con 11 campos nuevos (incluyendo un JSON tipado para `lifestyle`).
+- Se reutilizó el envoltorio criptográfico `AES-256-GCM` de `encryption.ts` para encriptar server-side los campos de `encryptedMedicalHistory` y `encryptedAllergies`.
+
+**2. Merge Logic Diferenciada (Cal.com vs Local):**
+- Los webhooks (`handleBookingCreated` de Cal.com) ahora **solo pre-pueblan** datos si el paciente es nuevo.
+- Una vez guardados desde el Portal, se marca el `profileSource` como `'PORTAL'` limitando que futuros turnos importados sobreescriban los datos del paciente.
+
+**3. UX Clínica (Indicador de Completitud y Sheet Lateral):**
+- Un motor puro calcula el "Health Score" evaluando la completitud de campos obligatorios ponderados.
+- El puntaje se expone como un `ProfileCompletionBadge` pulsante en la cabecera del Workspace.
+- Al hacer clic, se despliega un `PatientProfileSheet` lateral (Shadcn) que no bloquea la vista del listado de pacientes, utilizando `useTransition` persistiendo vía Server Action con Zod.

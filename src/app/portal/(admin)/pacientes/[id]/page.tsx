@@ -4,6 +4,8 @@ import { FileText, History, Share2 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { getConsultationByAppointmentId } from "@/lib/consultations";
+import { getPatientProfile, calculateProfileScore } from "@/lib/patient-profile";
+import { PatientProfileTrigger } from "@/components/portal/PatientProfileTrigger";
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +17,7 @@ export default async function SelectedPatientPage({
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
-  // Retrieve the patient
+  // Retrieve the base patient with appointments for the workspace
   const patient = await prisma.patient.findUnique({
     where: { id },
     include: {
@@ -31,6 +33,10 @@ export default async function SelectedPatientPage({
     console.error(`[SelectedPatientPage] Patient NOT FOUND for ID: "${id}"`);
     return notFound();
   }
+
+  // Retrieve the decrypted profile and calculate score
+  const profile = await getPatientProfile(id);
+  const profileScore = profile ? calculateProfileScore(profile) : 0;
 
   console.log(`[SelectedPatientPage] Patient FOUND: ${patient.id} - ${patient.name}`);
 
@@ -54,8 +60,9 @@ export default async function SelectedPatientPage({
           <div>
             <div className="flex items-center gap-4 mb-2">
               <h1 className="text-4xl font-bold tracking-tight text-slate-900">{patient.name}</h1>
-              {/* Optional: we could calculate age if we had dateOfBirth, using a mocked tag for aesthetics */}
-              <span className="px-3 py-1 rounded-full bg-slate-200/50 text-slate-600 text-sm font-medium">Paciente</span>
+              {profile && (
+                 <PatientProfileTrigger patient={profile} score={profileScore} />
+              )}
             </div>
             <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
               <FileText className="w-4 h-4" />
