@@ -87,3 +87,20 @@ Se implementó el motor de ingesta de citas desde Cal.com (The Bridge) y se redi
 - **Subdomain Proxy Double-Routing Bug:** Al tener un interceptor custom en `src/proxy.ts` que inyecta `/portal` de fondo a las URLs que empiezan con `portal.localhost`, los links internos del sistema **NO DEBEN** poseer `/portal` rígido en el `href` (e.g. `router.push("/pacientes/[id]")` en lugar de `"/portal/pacientes/[id]"`). Si no, el middleware los intercepta generandó un doble prefijo (`/portal/portal/pacientes`) que arroja un fast-404 indetectable a nivel componente.
 - **Next.js 15 Async Params:** Las rutas de catch-all o dinámicas puras como `src/app/portal/(admin)/pacientes/[id]/page.tsx` requieren obligatoriamente desestructuración asíncrona (`const { id } = await params;`) con tipado de promesa genérica `Promise<{ id: string }>`. Intentar acceder síncronamente al `id` provocará un crash SSR de React ("Sync Dynamic APIs Error").
 - **Turbopack Build Cache Fallback (404):** Si Next.js no puede pre-resolver los IDs dinámicamente y no detecta que el Layout es dinámico, devolverá instintivamente 404 en compilación al no encontrar el ID en el mapa de Build. Las Server Components dinámicas de extracción (`pacientes/[id]/page.tsx`) deben resolverse adjuntando obligatoriamente `export const dynamic = 'force-dynamic';` para omitir la caché estática corrupta de Turbopack.
+
+### Sesión 2026-03-07 — Módulo de Flujo de Consulta Médica (Workspace Clínico)
+
+Se diseñó e implementó la vista principal para realizar consultas ayurvédicas, logrando un UX en tiempo real (Single Page feel) fuertemente tipado.
+
+**1. Arquitectura del Workspace Interactivo (React State & UX):**
+- El componente `ConsultationWorkspace.tsx` actúa como gran orquestador (Smart Component) que mantiene el estado global (`symptomIntensities`, `vataFinal`, notas) delegando callbacks de UI a micro-componentes puros (`DoshaSlider`, `SymptomChecklist`).
+- Se aplicó un patrón UI de **Scroll Independiente (Split-Pane)**: La grilla padre restringe su altura (`h-full overflow-hidden`) delegando el `overflow-y-auto` a nivel columna individual. Esto permite navegar catálogos larguísimos de síntomas en la izquierda sin perder de vista los Doshas y las notas en la derecha.
+
+**2. Scoring Engine & Flexibilidad de Dominio:**
+- La lógica del motor de Ayurveda (`calculateDoshaScores`) ahora ingiere un mapa de intensidades (`Record<string, number>`) derivado de un Segmented Control (0-3). Mapear la intensidad por el `baseWeight` de cada Dosha arroja sugerencias que mutan en tiempo real según el checkbox.
+- **Catálogo In-Memory:** El catálogo de síntomas se guardó como TypeScript puro (`SYMPTOM_CATALOG`) en `/src/lib/` en vez de usar base de datos. En etapa de evolución MVP, esto provee la libertad máxima de cambiar ramas médicas sin migraciones de modelo (`schema.prisma`). Sólo se guarda la instantánea dinámica (`symptomSnapshot` vía `JSON`) en PostgreSQL.
+
+**3. Persistencia Atómica y Criptografía Server-Side:**
+- El guardado ocurre con un "SaveButton" flotante asincrónico optimista (`useTransition`). 
+- El `Server Action` de `saveConsultation` aprovecha el wrapper de `encrypt` (AES-256-GCM). Solo los datos analíticos "duros" (cantidades e índices) se guardan limpios; campos sensibles como `anamnesis`, `diagnosis`, `notes` (donde se generan los **Smart Tags automáticos**) se encriptan al ingresar a NeonDB.
+- Se previene la pérdida accidental invocando el hook `beforeunload` cuando `isDirty` es `true` y el form no se guardó con éxito.
