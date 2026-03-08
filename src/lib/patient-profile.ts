@@ -52,8 +52,7 @@ export async function getPatientProfile(patientId: string): Promise<DecryptedPat
     occupation: patient.occupation,
     address: patient.address,
     bloodType: patient.bloodType,
-    emergencyContactName: patient.emergencyContactName,
-    emergencyContactPhone: patient.emergencyContactPhone,
+    bloodType: patient.bloodType,
     profileSource: patient.profileSource,
     lastProfileUpdate: patient.lastProfileUpdate,
     createdAt: patient.createdAt,
@@ -74,23 +73,20 @@ export function calculateProfileScore(patient: DecryptedPatientProfile | Patient
   let score = 0;
 
   // Puntos basados en la importancia del dato (Total = 100%)
-  if (patient.phone) score += 10;
+  if (patient.phone) score += 15;
   if (patient.dateOfBirth) score += 15;
-  if (patient.gender) score += 10;
+  if (patient.gender) score += 15;
   
   // Verificamos de forma segura si el campo está encriptado (tipo Prisma) o en texto plano (tipo Decrypted)
   const hasMedicalHistory = 'encryptedMedicalHistory' in patient 
     ? !!patient.encryptedMedicalHistory 
     : !!patient.medicalHistory;
-  if (hasMedicalHistory) score += 25;
+  if (hasMedicalHistory) score += 30;
   
   const hasAllergies = 'encryptedAllergies' in patient 
     ? !!patient.encryptedAllergies 
     : !!patient.allergies;
-  if (hasAllergies) score += 20;
-  
-  if (patient.emergencyContactName) score += 10;
-  if (patient.emergencyContactPhone) score += 10;
+  if (hasAllergies) score += 25;
 
   return score;
 }

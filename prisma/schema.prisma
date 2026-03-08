@@ -23,8 +23,6 @@ model Patient {
   encryptedMedicalHistory String?
   encryptedAllergies      String?
   lifestyle               Json?
-  emergencyContactName    String?
-  emergencyContactPhone   String?
   
   // — Meta Data de Perfil —
   profileSource           String?        // Ej. "CAL_COM" o "PORTAL"

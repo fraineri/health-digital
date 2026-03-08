@@ -36,8 +36,6 @@ export function PatientProfileSheet({
     gender: patient.gender || "",
     bloodType: patient.bloodType || "",
     occupation: patient.occupation || "",
-    emergencyContactName: patient.emergencyContactName || "",
-    emergencyContactPhone: patient.emergencyContactPhone || "",
     medicalHistory: patient.medicalHistory || "",
     allergies: patient.allergies || "",
     lifestyle: {
@@ -100,7 +98,7 @@ export function PatientProfileSheet({
         </div>
 
         {/* Scrollable Form Content */}
-        <div className="px-8 pb-32">
+        <div className="px-8 pb-12">
           
           <ProfileFormSection title="Datos Personales" icon={<User className="w-4 h-4" />}>
              <div className="grid grid-cols-2 gap-4">
@@ -172,25 +170,6 @@ export function PatientProfileSheet({
                  </select>
                </div>
 
-             </div>
-          </ProfileFormSection>
-
-          <ProfileFormSection title="Contacto de Emergencia" icon={<AlertCircle className="w-4 h-4" />}>
-             <div className="grid grid-cols-2 gap-4">
-               <div className="space-y-1.5 flex flex-col">
-                 <label className="text-xs font-semibold text-slate-500">Nombre del Contacto</label>
-                 <input 
-                   name="emergencyContactName" value={formData.emergencyContactName} onChange={handleChange} 
-                   className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full" 
-                 />
-               </div>
-               <div className="space-y-1.5 flex flex-col">
-                 <label className="text-xs font-semibold text-slate-500">Teléfono o Parentesco</label>
-                 <input 
-                   name="emergencyContactPhone" value={formData.emergencyContactPhone} onChange={handleChange} 
-                   className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full" 
-                 />
-               </div>
              </div>
           </ProfileFormSection>
 
@@ -289,8 +268,8 @@ export function PatientProfileSheet({
 
         </div>
 
-        {/* Sticky Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-workspace via-workspace to-transparent border-t border-border/30">
+        {/* Relative Footer (Boton Guardar debajo de todo) */}
+        <div className="p-8 border-t border-border/30 mt-4">
            <button 
              onClick={handleSave}
              disabled={isPending}
