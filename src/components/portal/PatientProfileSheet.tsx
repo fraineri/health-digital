@@ -42,9 +42,10 @@ export function PatientProfileSheet({
       dietType: patient.lifestyle?.dietType || "",
       exerciseFrequency: patient.lifestyle?.exerciseFrequency || "",
       sleepQuality: patient.lifestyle?.sleepQuality || "",
+      stressLevel: patient.lifestyle?.stressLevel || "",
       smokingStatus: patient.lifestyle?.smokingStatus || "",
       alcoholConsumption: patient.lifestyle?.alcoholConsumption || "",
-      stressLevel: patient.lifestyle?.stressLevel || "",
+      anxietyLevel: patient.lifestyle?.anxietyLevel || "",
     }
   });
 
@@ -255,18 +256,45 @@ export function PatientProfileSheet({
                  </div>
 
                  <div className="space-y-1.5 flex flex-col">
-                   <label className="text-xs font-semibold text-slate-500">Ansiedad / Tabaco / Alcohol</label>
+                   <label className="text-xs font-semibold text-slate-500">Nivel de Ansiedad</label>
+                   <select 
+                     name="lifestyle.anxietyLevel" value={formData.lifestyle.anxietyLevel} onChange={handleChange}
+                     className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none"
+                   >
+                     <option value="">Seleccionar...</option>
+                     <option value="Bajo (Controlada)">Bajo (Controlada)</option>
+                     <option value="Moderado (Ocasional)">Moderado (Ocasional / Situacional)</option>
+                     <option value="Atracones/Somatización">Alta con Atracones / Somatización</option>
+                     <option value="Ataques de Pánico">Severa (Ataques de pánico)</option>
+                   </select>
+                 </div>
+
+                 <div className="space-y-1.5 flex flex-col">
+                   <label className="text-xs font-semibold text-slate-500">Consumo de Tabaco</label>
                    <select 
                      name="lifestyle.smokingStatus" value={formData.lifestyle.smokingStatus} onChange={handleChange}
                      className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none"
                    >
                      <option value="">Seleccionar...</option>
-                     <option value="Sin hábitos (No fuma/No toma)">Sin hábitos tóxicos</option>
-                     <option value="Social (Fines de semana ocasional)">Consumo social / Ocasional</option>
-                     <option value="Tabaquismo Activo">Tabaquismo activo</option>
+                     <option value="No fuma">No fuma</option>
                      <option value="Ex-fumador">Ex-fumador</option>
-                     <option value="Consumo de Alcohol Frecuente">Consumo de alcohol frecuente</option>
-                     <option value="Ansiedad/Atracones">Ansiedad marcada / Atracones</option>
+                     <option value="Ocasional (Social)">Ocasional (Social)</option>
+                     <option value="Fumador Activo">Fumador activo</option>
+                     <option value="Vapeo / Alternativos">Vapeo / Cigarrillo electrónico</option>
+                   </select>
+                 </div>
+
+                 <div className="space-y-1.5 flex flex-col">
+                   <label className="text-xs font-semibold text-slate-500">Consumo de Alcohol</label>
+                   <select 
+                     name="lifestyle.alcoholConsumption" value={formData.lifestyle.alcoholConsumption} onChange={handleChange}
+                     className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none"
+                   >
+                     <option value="">Seleccionar...</option>
+                     <option value="No consume">No consume</option>
+                     <option value="Ocasional (Sociales)">Ocasional (Eventos sociales)</option>
+                     <option value="Regular (Fines de semana)">Regular (Fines de semana)</option>
+                     <option value="Frecuente (Diario/Casi diario)">Frecuente (Diario o casi diario)</option>
                    </select>
                  </div>
 

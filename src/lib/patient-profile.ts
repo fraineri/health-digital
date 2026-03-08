@@ -9,6 +9,7 @@ export interface PatientLifestyle {
   smokingStatus?: string;
   alcoholConsumption?: string;
   stressLevel?: string;
+  anxietyLevel?: string;
 }
 
 export type DecryptedPatientProfile = Omit<

@@ -25,6 +25,7 @@ const PatientProfileSchema = z.object({
     smokingStatus: z.string().optional(),
     alcoholConsumption: z.string().optional(),
     stressLevel: z.string().optional(),
+    anxietyLevel: z.string().optional(),
   }).optional().nullable(),
 });
 
