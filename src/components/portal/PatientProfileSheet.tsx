@@ -256,11 +256,18 @@ export function PatientProfileSheet({
 
                  <div className="space-y-1.5 flex flex-col">
                    <label className="text-xs font-semibold text-slate-500">Ansiedad / Tabaco / Alcohol</label>
-                   <input 
-                     name="lifestyle.smokingStatus" value={formData.lifestyle.smokingStatus} onChange={handleChange} 
-                     placeholder="Ej: Fuma ocasional, alcohol fines de s..."
-                     className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full" 
-                   />
+                   <select 
+                     name="lifestyle.smokingStatus" value={formData.lifestyle.smokingStatus} onChange={handleChange}
+                     className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none"
+                   >
+                     <option value="">Seleccionar...</option>
+                     <option value="Sin hábitos (No fuma/No toma)">Sin hábitos tóxicos</option>
+                     <option value="Social (Fines de semana ocasional)">Consumo social / Ocasional</option>
+                     <option value="Tabaquismo Activo">Tabaquismo activo</option>
+                     <option value="Ex-fumador">Ex-fumador</option>
+                     <option value="Consumo de Alcohol Frecuente">Consumo de alcohol frecuente</option>
+                     <option value="Ansiedad/Atracones">Ansiedad marcada / Atracones</option>
+                   </select>
                  </div>
 
              </div>
