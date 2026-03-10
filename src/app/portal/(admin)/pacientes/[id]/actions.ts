@@ -15,6 +15,8 @@ export interface SaveConsultationInput {
   nutritionPlan: string | null;
   phytotherapy: string | null;
   dailyRoutine: string | null;
+  agniType: string | null;
+  amaLevel: number | null;
   notes: string | null;          // Plain text
   anamnesis: string | null;      // Plain text
   diagnosis: string | null;      // Plain text
@@ -57,6 +59,8 @@ export async function saveConsultation(
       nutritionPlan: input.nutritionPlan,
       phytotherapy: input.phytotherapy,
       dailyRoutine: input.dailyRoutine,
+      agniType: input.agniType,
+      amaLevel: input.amaLevel,
       symptomSnapshot: input.symptomIntensities, // JSON mapping for audit tracking
       encryptedNotes,
       encryptedAnamnesis,

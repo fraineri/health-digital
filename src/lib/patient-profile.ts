@@ -53,7 +53,6 @@ export async function getPatientProfile(patientId: string): Promise<DecryptedPat
     occupation: patient.occupation,
     address: patient.address,
     bloodType: patient.bloodType,
-    bloodType: patient.bloodType,
     profileSource: patient.profileSource,
     lastProfileUpdate: patient.lastProfileUpdate,
     createdAt: patient.createdAt,

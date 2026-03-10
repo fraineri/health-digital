@@ -14,6 +14,8 @@ export interface DecryptedConsultation {
   nutritionPlan: string | null;
   phytotherapy: string | null;
   dailyRoutine: string | null;
+  agniType: string | null;
+  amaLevel: number | null;
   notes: string | null;
   anamnesis: string | null;
   diagnosis: string | null;
@@ -63,6 +65,8 @@ export async function getConsultationByAppointmentId(
     nutritionPlan: consultation.nutritionPlan,
     phytotherapy: consultation.phytotherapy,
     dailyRoutine: consultation.dailyRoutine,
+    agniType: consultation.agniType,
+    amaLevel: consultation.amaLevel,
     symptomSnapshot: consultation.symptomSnapshot as Record<string, number> | null,
     notes,
     anamnesis,

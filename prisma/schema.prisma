@@ -113,6 +113,10 @@ model Consultation {
   encryptedAnamnesis String?
   encryptedDiagnosis String?
 
+  // — Síntesis Clínica Integrativa —
+  agniType           String?      // Enum lógico: "SAMA" | "VISHAMA" | "TIKSHNA" | "MANDA"
+  amaLevel           Int?         // 0-3 (intensidad de toxinas)
+
   // — Symptom Scores (snapshot del checklist) —
   symptomSnapshot    Json?        // Snapshot de los síntomas marcados
 

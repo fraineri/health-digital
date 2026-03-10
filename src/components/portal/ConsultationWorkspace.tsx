@@ -7,6 +7,8 @@ import { SymptomChecklist } from "./SymptomChecklist";
 import { TreatmentPlanForm } from "./TreatmentPlanForm";
 import { ClinicalNotesArea } from "./ClinicalNotes";
 import { SaveButton } from "./SaveButton";
+import { ClinicalSynthesisBlock } from "./ClinicalSynthesisBlock";
+import { AgniType } from "./AgniSelector";
 import { calculateDoshaScores } from "@/lib/dosha-scoring";
 import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/actions";
 import { DecryptedConsultation } from "@/lib/consultations";
@@ -42,6 +44,9 @@ export function ConsultationWorkspace({
   const [phytotherapy, setPhytotherapy] = useState<string | null>(initialData?.phytotherapy || null);
   const [dailyRoutine, setDailyRoutine] = useState<string | null>(initialData?.dailyRoutine || null);
   
+  const [agniType, setAgniType] = useState<AgniType | null>((initialData?.agniType as AgniType) || null);
+  const [amaLevel, setAmaLevel] = useState<number>(initialData?.amaLevel ?? 0);
+
   const [notes, setNotes] = useState(initialData?.notes || "");
   const [anamnesis, setAnamnesis] = useState(initialData?.anamnesis || "");
   const [diagnosis, setDiagnosis] = useState(initialData?.diagnosis || "");
@@ -77,8 +82,8 @@ export function ConsultationWorkspace({
   // Protect against accidental closure if dirty
   const isDirty = useMemo(() => {
      const hasSymptoms = Object.values(symptomIntensities).some(val => val > 0);
-     return hasSymptoms || notes !== "" || vataFinal !== null;
-  }, [symptomIntensities, notes, vataFinal]);
+     return hasSymptoms || notes !== "" || diagnosis !== "" || vataFinal !== null || agniType !== null || amaLevel !== 0;
+  }, [symptomIntensities, notes, diagnosis, vataFinal, agniType, amaLevel]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -108,6 +113,8 @@ export function ConsultationWorkspace({
         nutritionPlan,
         phytotherapy,
         dailyRoutine,
+        agniType,
+        amaLevel,
         notes,
         anamnesis,
         diagnosis
@@ -202,6 +209,17 @@ export function ConsultationWorkspace({
             {/* 2. Notes & Treatment Grid */}
             <section className="flex-1 pb-10">
               <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase">Evaluación y Plan</h3>
+              
+              <ClinicalSynthesisBlock 
+                agniType={agniType}
+                amaLevel={amaLevel}
+                diagnosis={diagnosis}
+                onAgniChange={setAgniType}
+                onAmaChange={setAmaLevel}
+                onDiagnosisChange={setDiagnosis}
+                activeSymptomLabels={activeSymptomLabels}
+              />
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 
                 {/* Notes Column */}
@@ -214,12 +232,6 @@ export function ConsultationWorkspace({
                        onChange={setAnamnesis}
                        smartTags={activeSymptomLabels}
                      />
-                     <ClinicalNotesArea 
-                       label="Diagnóstico / Conclusión"
-                       placeholder="Resumen del desequilibrio y enfoque terapéutico principal..."
-                       value={diagnosis}
-                       onChange={setDiagnosis}
-                     />
                   </div>
                 </div>
 
@@ -230,9 +242,9 @@ export function ConsultationWorkspace({
                     phytotherapy={phytotherapy}
                     dailyRoutine={dailyRoutine}
                     onChange={(field, val) => {
-                      if (field === 'nutritionPlan') setNutritionPlan(val);
-                      if (field === 'phytotherapy') setPhytotherapy(val);
-                      if (field === 'dailyRoutine') setDailyRoutine(val);
+                      if (field === "nutritionPlan") setNutritionPlan(val);
+                      if (field === "phytotherapy") setPhytotherapy(val);
+                      if (field === "dailyRoutine") setDailyRoutine(val);
                     }}
                   />
 

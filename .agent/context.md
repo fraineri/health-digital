@@ -110,7 +110,7 @@ Se diseñó e implementó la vista principal para realizar consultas ayurvédica
 Se diseñó e implementó el módulo para recolectar datos demográficos, antecedentes y estilo de vida.
 
 **1. Data Layer & Encriptación Extendida:**
-- Modelo `Patient` extendido con 11 campos nuevos (incluyendo un JSON tipado para `lifestyle`).
+- Modelo `Patient` extendido con 9 campos nuevos (incluyendo un JSON tipado para `lifestyle`).
 - Se reutilizó el envoltorio criptográfico `AES-256-GCM` de `encryption.ts` para encriptar server-side los campos de `encryptedMedicalHistory` y `encryptedAllergies`.
 
 **2. Merge Logic Diferenciada (Cal.com vs Local):**
@@ -118,6 +118,7 @@ Se diseñó e implementó el módulo para recolectar datos demográficos, antece
 - Una vez guardados desde el Portal, se marca el `profileSource` como `'PORTAL'` limitando que futuros turnos importados sobreescriban los datos del paciente.
 
 **3. UX Clínica (Indicador de Completitud y Sheet Lateral):**
-- Un motor puro calcula el "Health Score" evaluando la completitud de campos obligatorios ponderados.
+- Un motor puro calcula el "Health Score" evaluando la completitud de campos obligatorios ponderados (Teléfono, Sexo, Fecha de Nac., Antecedentes y Alergias).
 - El puntaje se expone como un `ProfileCompletionBadge` pulsante en la cabecera del Workspace.
-- Al hacer clic, se despliega un `PatientProfileSheet` lateral (Shadcn) que no bloquea la vista del listado de pacientes, utilizando `useTransition` persistiendo vía Server Action con Zod.
+- Al hacer clic, se despliega un `PatientProfileSheet` lateral (Shadcn) que no bloquea la vista del listado, persistiendo los datos vía Server Actions y Zod.
+- La estética "Clinical Earthy" presenta campos médicos agrupados en contenedores con dividers suaves y menús desplegables tipados individualmente para evaluar gradientes de hábitos (Ansiedad, Tabaco, Alcohol) de forma más modular.
