@@ -1,11 +1,9 @@
 import { AppointmentInbox } from "@/components/portal/AppointmentInbox";
-import { ConsultationWorkspace } from "@/components/portal/ConsultationWorkspace";
-import { FileText, History, Share2 } from "lucide-react";
+import { PatientWorkspaceTabs } from "@/components/portal/PatientWorkspaceTabs";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { getConsultationByAppointmentId } from "@/lib/consultations";
 import { getPatientProfile, calculateProfileScore } from "@/lib/patient-profile";
-import { PatientProfileTrigger } from "@/components/portal/PatientProfileTrigger";
 
 export const dynamic = 'force-dynamic';
 
@@ -55,33 +53,16 @@ export default async function SelectedPatientPage({
 
       {/* Column 3: Clinical Workspace */}
       <div className="flex-1 bg-workspace relative flex flex-col h-full overflow-hidden">
-        {/* Sticky Header with Actions */}
-        <header className="px-10 py-8 shrink-0 flex items-start justify-between border-b border-border/40">
-          <div>
-            <div className="flex items-center gap-4 mb-2">
-              <h1 className="text-4xl font-bold tracking-tight text-slate-900">{patient.name}</h1>
-              {profile && (
-                 <PatientProfileTrigger patient={profile} score={profileScore} />
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-slate-500 text-sm font-medium">
-              <FileText className="w-4 h-4" />
-              <span>Motivo de consulta: {triage?.reasonForVisit || "No especificado en el cuestionario previo."}</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-4 text-slate-400">
-            <button className="p-2 hover:bg-slate-200 hover:text-slate-600 rounded-full transition-colors"><History className="w-5 h-5"/></button>
-            <button className="p-2 hover:bg-slate-200 hover:text-slate-600 rounded-full transition-colors"><Share2 className="w-5 h-5"/></button>
-          </div>
-        </header>
-
-        {/* Dynamic Workspace powered by React Client Component */}
-        <ConsultationWorkspace 
-          patientId={id}
-          appointmentId={latestAppointment?.id}
-          initialData={initialConsultationData}
-        />
+        {profile && (
+          <PatientWorkspaceTabs 
+            patientId={id}
+            appointmentId={latestAppointment?.id}
+            initialData={initialConsultationData}
+            patient={profile}
+            profileScore={profileScore}
+            reasonForVisit={triage?.reasonForVisit || undefined}
+          />
+        )}
       </div>
     </>
   );
