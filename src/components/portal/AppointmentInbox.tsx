@@ -19,7 +19,7 @@ export async function AppointmentInbox({ activePatientId }: { activePatientId?: 
       <InboxRefresher />
       
       {/* Queue Header */}
-      <div className="h-20 px-6 flex flex-col justify-center border-b border-border/40 shrink-0">
+      <div className="h-20 pl-20 pr-6 flex flex-col justify-center border-b border-border/40 shrink-0">
         <h2 className="text-xl font-bold text-slate-800">Pacientes de Hoy</h2>
         <span className="text-sm text-slate-500 font-medium capitalize">{todayDate}</span>
       </div>
