@@ -71,6 +71,7 @@ function PointStepper({
 // ─── DoshaColumn ─────────────────────────────────────────────────────────────
 interface DoshaColumnProps {
   doshaKey: DoshaKey;
+  expressionLabel: string;
   value: number;
   maxReached: boolean;
   onIncrement: () => void;
@@ -79,6 +80,7 @@ interface DoshaColumnProps {
 
 function DoshaColumn({
   doshaKey,
+  expressionLabel,
   value,
   maxReached,
   onIncrement,
@@ -87,7 +89,10 @@ function DoshaColumn({
   const { textColor } = DOSHA_CONFIG[doshaKey];
 
   return (
-    <div className="flex items-center justify-center py-2 px-1">
+    <div className="flex flex-col items-center gap-1.5 py-2 px-2">
+      <span className="text-[10px] leading-tight text-center text-slate-500 min-h-[2rem]">
+        {expressionLabel}
+      </span>
       <PointStepper
         value={value}
         maxReached={maxReached}
@@ -145,6 +150,7 @@ const AttributeCard = React.memo(function AttributeCard({
           <DoshaColumn
             key={dosha}
             doshaKey={dosha}
+            expressionLabel={attribute.expressions[dosha].label}
             value={distribution[dosha]}
             maxReached={maxReached}
             onIncrement={() => onChange(attribute.id, dosha, 1)}

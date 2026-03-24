@@ -13,9 +13,9 @@
   --color-sidebar-foreground: #f8fafc; /* slate-50 */
   
   /* Doshas */
-  --color-vata: #88987d;
+  --color-vata: #6ba4d9;
   --color-pitta: #d97757;
-  --color-kapha: #6ba4d9;
+  --color-kapha: #88987d;
 
   /* Standard Shadcn UI structural colors mapped to calm/earthy tones */
   --color-border: #e2e8f0;

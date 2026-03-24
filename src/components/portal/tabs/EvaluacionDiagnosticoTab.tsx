@@ -65,8 +65,8 @@ export function EvaluacionDiagnosticoTab({
           <div className="grid grid-cols-3 gap-6">
             <DoshaSlider
               name="Vata"
-              element="Aire y Espacio"
-              icon={Wind}
+              element="Tierra y Agua"
+              icon={Droplets}
               bgClass="bg-vata"
               suggestedLevel={suggestedScores.vata}
               level={displayVata}
@@ -87,8 +87,8 @@ export function EvaluacionDiagnosticoTab({
             />
             <DoshaSlider
               name="Kapha"
-              element="Tierra y Agua"
-              icon={Droplets}
+              element="Aire y Espacio"
+              icon={Wind}
               bgClass="bg-kapha"
               suggestedLevel={suggestedScores.kapha}
               level={displayKapha}
