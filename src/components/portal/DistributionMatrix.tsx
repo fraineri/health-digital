@@ -90,7 +90,7 @@ function DoshaColumn({
 
   return (
     <div className="flex flex-col items-center gap-1.5 py-2 px-2">
-      <span className="text-[10px] leading-tight text-center text-slate-500 min-h-[2rem]">
+      <span className="text-[12px] leading-tight text-center text-slate-500 min-h-[2rem]">
         {expressionLabel}
       </span>
       <PointStepper
