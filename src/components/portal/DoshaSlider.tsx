@@ -42,7 +42,7 @@ export function DoshaSlider({
             <button
               onClick={onReset}
               className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-md transition-colors shadow-sm bg-white border border-slate-200"
-              title="Restaurar valor sugerido IA"
+              title="Restaurar valor sugerido"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -107,7 +107,7 @@ export function DoshaSlider({
         
         {isManuallyAdjusted && (
            <span className="text-[10px] text-slate-400 mt-2">
-             Sugerido IA: <span className="font-semibold">{suggestedLevel.toFixed(1)}%</span>
+             Sugerido: <span className="font-semibold">{suggestedLevel.toFixed(1)}%</span>
            </span>
         )}
       </div>

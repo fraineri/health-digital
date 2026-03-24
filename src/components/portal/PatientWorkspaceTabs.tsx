@@ -215,7 +215,7 @@ export function PatientWorkspaceTabs({
              <HistoriaClinicaTab patient={patient} />
            </TabsContent>
 
-           <TabsContent value="evaluacion" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden overflow-hidden">
+           <TabsContent value="evaluacion" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden">
              <EvaluacionDiagnosticoTab
                 distributions={distributions}
                 setDistributions={setDistributions}
@@ -226,13 +226,6 @@ export function PatientWorkspaceTabs({
                 setVataFinal={setVataFinal}
                 setPittaFinal={setPittaFinal}
                 setKaphaFinal={setKaphaFinal}
-                agniType={agniType}
-                setAgniType={setAgniType}
-                amaLevel={amaLevel}
-                setAmaLevel={setAmaLevel}
-                diagnosis={diagnosis}
-                setDiagnosis={setDiagnosis}
-                activeSymptomLabels={activeSymptomLabels}
              />
            </TabsContent>
            

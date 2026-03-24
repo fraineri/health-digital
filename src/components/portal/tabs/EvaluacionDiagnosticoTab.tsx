@@ -1,8 +1,6 @@
-import { Activity, Wind, Flame, Droplets } from "lucide-react";
+import { Wind, Flame, Droplets } from "lucide-react";
 import { DistributionMatrix } from "../DistributionMatrix";
 import { DoshaSlider } from "../DoshaSlider";
-import { ClinicalSynthesisBlock } from "../ClinicalSynthesisBlock";
-import { AgniType } from "../AgniSelector";
 import { DoshaScores } from "@/lib/dosha-scoring";
 import { AttributeDistributions } from "@/lib/attribute-catalog";
 
@@ -16,13 +14,6 @@ interface EvaluacionDiagnosticoTabProps {
   setVataFinal: (val: number | null) => void;
   setPittaFinal: (val: number | null) => void;
   setKaphaFinal: (val: number | null) => void;
-  agniType: AgniType | null;
-  setAgniType: (val: AgniType) => void;
-  amaLevel: number;
-  setAmaLevel: (val: number) => void;
-  diagnosis: string;
-  setDiagnosis: (val: string) => void;
-  activeSymptomLabels: string[];
 }
 
 export function EvaluacionDiagnosticoTab({
@@ -35,38 +26,31 @@ export function EvaluacionDiagnosticoTab({
   setVataFinal,
   setPittaFinal,
   setKaphaFinal,
-  agniType,
-  setAgniType,
-  amaLevel,
-  setAmaLevel,
-  diagnosis,
-  setDiagnosis,
-  activeSymptomLabels,
 }: EvaluacionDiagnosticoTabProps) {
   return (
-    <div className="grid grid-cols-12 h-full w-full">
-      {/* Left Area: Symptoms (Scrollable) */}
-      <div className="col-span-12 lg:col-span-6 border-r border-border/40 h-full overflow-y-auto pl-10 pr-6 pt-6 pb-40 !custom-scrollbar scroll-smooth">
-        <section>
-          <DistributionMatrix
-            distributions={distributions}
-            onChange={setDistributions}
-          />
-        </section>
-      </div>
+    <div className="h-full overflow-y-auto">
+      <div className="max-w-5xl mx-auto px-10 pt-10 pb-40">
 
-      {/* Right Area: Sliders & Treatment (Scrollable) */}
-      <div className="col-span-12 lg:col-span-6 flex flex-col gap-12 h-full overflow-y-auto pl-10 pr-10 pt-6 pb-40 !custom-scrollbar scroll-smooth">
-        {/* 1. Diagnostic */}
-        <section>
-          <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase">
+        {/* Card Header */}
+        <div className="bg-white rounded-t-3xl border border-b-0 border-border/40 px-8 py-6 bg-slate-50/50">
+          <h2 className="text-xl font-bold text-slate-800 tracking-tight">
+            Evaluación y Diagnóstico Prakriti
+          </h2>
+          <p className="text-sm font-medium text-slate-500 mt-1">
+            Distribuya 5 puntos por atributo entre las expresiones dóshicas. Los porcentajes se actualizan en tiempo real.
+          </p>
+        </div>
+
+        {/* Sticky Dosha Panel */}
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-x border-border/40 px-8 py-6 border-b border-border/30">
+          <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-4 uppercase">
             Diagnóstico Doshas (Interactivo)
           </h3>
           <div className="grid grid-cols-3 gap-6">
             <DoshaSlider
               name="Vata"
-              element="Tierra y Agua"
-              icon={Droplets}
+              element="Aire y Espacio"
+              icon={Wind}
               bgClass="bg-vata"
               suggestedLevel={suggestedScores.vata}
               level={displayVata}
@@ -87,8 +71,8 @@ export function EvaluacionDiagnosticoTab({
             />
             <DoshaSlider
               name="Kapha"
-              element="Aire y Espacio"
-              icon={Wind}
+              element="Tierra y Agua"
+              icon={Droplets}
               bgClass="bg-kapha"
               suggestedLevel={suggestedScores.kapha}
               level={displayKapha}
@@ -97,22 +81,16 @@ export function EvaluacionDiagnosticoTab({
               active={displayKapha > displayVata && displayKapha > displayPitta}
             />
           </div>
-        </section>
+        </div>
 
-        <section>
-          <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase">
-            Evaluación y Plan
-          </h3>
-          <ClinicalSynthesisBlock
-            agniType={agniType}
-            amaLevel={amaLevel}
-            diagnosis={diagnosis}
-            onAgniChange={setAgniType}
-            onAmaChange={setAmaLevel}
-            onDiagnosisChange={setDiagnosis}
-            activeSymptomLabels={activeSymptomLabels}
+        {/* Matrix Content */}
+        <div className="bg-white rounded-b-3xl border border-t-0 border-border/40 shadow-sm p-8">
+          <DistributionMatrix
+            distributions={distributions}
+            onChange={setDistributions}
           />
-        </section>
+        </div>
+
       </div>
     </div>
   );
