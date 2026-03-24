@@ -5,11 +5,11 @@ import { Wind, Flame, Droplets, Sparkles, Activity, FileText, History, Share2, C
 import { SaveButton } from "./SaveButton";
 import { AgniType } from "./AgniSelector";
 import { ConsultationHistory } from "./ConsultationHistory";
-import { calculateDoshaScores } from "@/lib/dosha-scoring";
+import { calculateDoshaScoresV2, isV2Snapshot } from "@/lib/dosha-scoring";
 import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/actions";
 import { DecryptedConsultation } from "@/lib/consultations";
 import { DecryptedPatientProfile } from "@/lib/patient-profile";
-import { SYMPTOM_CATALOG } from "@/lib/symptom-catalog";
+import { ATTRIBUTE_CATALOG, AttributeDistributions } from "@/lib/attribute-catalog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ProfileCompletionBadge } from "./ProfileCompletionBadge";
 
@@ -44,13 +44,14 @@ export function PatientWorkspaceTabs({
 
   // --- 1. State Initialization ---
   
-  // Mapping of symptom ID to its intensity (0-3)
-  const rawIntensities = initialData?.symptomSnapshot;
-  const initialIntensities = (typeof rawIntensities === 'object' && rawIntensities !== null && !Array.isArray(rawIntensities)) 
-    ? (rawIntensities as Record<string, number>)
-    : {};
-  
-  const [symptomIntensities, setSymptomIntensities] = useState<Record<string, number>>(initialIntensities);
+  const initialDistributions = (() => {
+    const raw = initialData?.symptomSnapshot;
+    if (!raw) return {};
+    if (isV2Snapshot(raw)) return raw.distributions;
+    return {};
+  })();
+
+  const [distributions, setDistributions] = useState<AttributeDistributions>(initialDistributions);
   
   // Dosha manual overrides. Null means "use suggested"
   const [vataFinal, setVataFinal] = useState<number | null>(initialData?.vataFinal ?? null);
@@ -75,29 +76,35 @@ export function PatientWorkspaceTabs({
   // --- 2. Derived State ---
   
   // Calculate engine suggestions based on current symptom intensities
-  const suggestedScores = useMemo(() => calculateDoshaScores(symptomIntensities), [symptomIntensities]);
+  const suggestedScores = useMemo(() => calculateDoshaScoresV2(distributions), [distributions]);
   
   const displayVata = vataFinal !== null ? vataFinal : suggestedScores.vata;
   const displayPitta = pittaFinal !== null ? pittaFinal : suggestedScores.pitta;
   const displayKapha = kaphaFinal !== null ? kaphaFinal : suggestedScores.kapha;
 
-  // Extract labels for smart tags inside notes, based on selected symptoms (intensity > 0)
   const activeSymptomLabels = useMemo(() => {
-    return SYMPTOM_CATALOG
-      .filter(s => symptomIntensities[s.id] > 0)
-      .map(s => {
-        const baseLabel = s.label.split(" / ")[0];
-        const intensity = symptomIntensities[s.id];
-        const suffix = intensity === 3 ? " (Agudo)" : intensity === 2 ? " (Mod)" : " (Leve)";
-        return `${baseLabel}${suffix}`;
+    return ATTRIBUTE_CATALOG
+      .filter(attr => {
+        const dist = distributions[attr.id];
+        return dist && (dist.vata + dist.pitta + dist.kapha) > 0;
+      })
+      .map(attr => {
+        const dist = distributions[attr.id]!;
+        const max = Math.max(dist.vata, dist.pitta, dist.kapha);
+        let dominant: 'vata' | 'pitta' | 'kapha' = 'vata';
+        if (dist.pitta === max) dominant = 'pitta';
+        if (dist.kapha === max) dominant = 'kapha';
+        return `${attr.name}: ${attr.expressions[dominant].label}`;
       });
-  }, [symptomIntensities]);
+  }, [distributions]);
 
   // Protect against accidental closure if dirty
   const isDirty = useMemo(() => {
-     const hasSymptoms = Object.values(symptomIntensities).some(val => val > 0);
-     return hasSymptoms || notes !== "" || diagnosis !== "" || vataFinal !== null || agniType !== null || amaLevel !== 0;
-  }, [symptomIntensities, notes, diagnosis, vataFinal, agniType, amaLevel]);
+    const hasDistributions = Object.values(distributions).some(
+      d => d.vata + d.pitta + d.kapha > 0
+    );
+    return hasDistributions || notes !== "" || diagnosis !== "" || vataFinal !== null || agniType !== null || amaLevel !== 0;
+  }, [distributions, notes, diagnosis, vataFinal, agniType, amaLevel]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -120,7 +127,7 @@ export function PatientWorkspaceTabs({
       const input: SaveConsultationInput = {
         patientId,
         appointmentId,
-        symptomIntensities,
+        symptomSnapshot: { version: 2 as const, distributions },
         vataFinal: displayVata,
         pittaFinal: displayPitta,
         kaphaFinal: displayKapha,
@@ -210,8 +217,8 @@ export function PatientWorkspaceTabs({
 
            <TabsContent value="evaluacion" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden overflow-hidden">
              <EvaluacionDiagnosticoTab
-                symptomIntensities={symptomIntensities}
-                setSymptomIntensities={setSymptomIntensities}
+                distributions={distributions}
+                setDistributions={setDistributions}
                 suggestedScores={suggestedScores}
                 displayVata={displayVata}
                 displayPitta={displayPitta}

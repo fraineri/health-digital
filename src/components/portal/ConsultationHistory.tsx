@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DecryptedConsultation } from "@/lib/consultations";
+import { isV2Snapshot } from "@/lib/dosha-scoring";
 import { Calendar, ChevronDown, ChevronUp, FileText, Activity } from "lucide-react";
 
 interface ConsultationHistoryProps {
@@ -77,13 +78,21 @@ export function ConsultationHistory({ consultations, currentAppointmentId }: Con
                         </p>
                       </div>
 
-                      {consultation.symptomSnapshot && Object.keys(consultation.symptomSnapshot).length > 0 && (
+                      {consultation.symptomSnapshot && (
                         <div>
                           <h4 className="font-bold text-slate-700 mb-2 flex items-center gap-2">
-                            <Activity className="w-3 h-3 text-slate-400" /> Síntomas Registrados
+                            <Activity className="w-3 h-3 text-slate-400" /> Evaluación Registrada
                           </h4>
                           <div className="flex flex-wrap gap-2 text-xs">
-                             <span className="bg-white border border-border/50 px-2 py-1 rounded text-slate-500">{Object.values(consultation.symptomSnapshot).filter((v: any) => v > 0).length} síntomas</span>
+                            {isV2Snapshot(consultation.symptomSnapshot) ? (
+                              <span className="bg-white border border-border/50 px-2 py-1 rounded text-slate-500">
+                                {Object.keys(consultation.symptomSnapshot.distributions).length} atributos evaluados
+                              </span>
+                            ) : (
+                              <span className="bg-white border border-border/50 px-2 py-1 rounded text-slate-500">
+                                {Object.values(consultation.symptomSnapshot).filter((v: unknown) => typeof v === 'number' && v > 0).length} síntomas (evaluación anterior)
+                              </span>
+                            )}
                           </div>
                         </div>
                       )}

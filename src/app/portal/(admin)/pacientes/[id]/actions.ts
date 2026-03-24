@@ -2,13 +2,14 @@
 
 import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/encryption";
-import { calculateDoshaScores } from "@/lib/dosha-scoring";
+import { calculateDoshaScoresV2, SymptomSnapshotV2 } from "@/lib/dosha-scoring";
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 
 export interface SaveConsultationInput {
   patientId: string;
   appointmentId?: string;
-  symptomIntensities: Record<string, number>;
+  symptomSnapshot: SymptomSnapshotV2;
   vataFinal: number;
   pittaFinal: number;
   kaphaFinal: number;
@@ -27,7 +28,7 @@ export async function saveConsultation(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // 1. Recalcular scores sugeridos usando la función pura
-    const suggestedScores = calculateDoshaScores(input.symptomIntensities);
+    const suggestedScores = calculateDoshaScoresV2(input.symptomSnapshot.distributions);
 
     // 2. Encriptar notas y campos clínicos
     const encryptedNotes = input.notes ? encrypt(input.notes) : null;
@@ -61,7 +62,7 @@ export async function saveConsultation(
       dailyRoutine: input.dailyRoutine,
       agniType: input.agniType,
       amaLevel: input.amaLevel,
-      symptomSnapshot: input.symptomIntensities, // JSON mapping for audit tracking
+      symptomSnapshot: input.symptomSnapshot as unknown as Prisma.InputJsonValue,
       encryptedNotes,
       encryptedAnamnesis,
       encryptedDiagnosis,

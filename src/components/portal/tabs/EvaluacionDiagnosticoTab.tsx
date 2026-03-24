@@ -1,13 +1,14 @@
 import { Activity, Wind, Flame, Droplets } from "lucide-react";
-import { SymptomChecklist } from "../SymptomChecklist";
+import { DistributionMatrix } from "../DistributionMatrix";
 import { DoshaSlider } from "../DoshaSlider";
 import { ClinicalSynthesisBlock } from "../ClinicalSynthesisBlock";
 import { AgniType } from "../AgniSelector";
 import { DoshaScores } from "@/lib/dosha-scoring";
+import { AttributeDistributions } from "@/lib/attribute-catalog";
 
 interface EvaluacionDiagnosticoTabProps {
-  symptomIntensities: Record<string, number>;
-  setSymptomIntensities: (intensities: Record<string, number>) => void;
+  distributions: AttributeDistributions;
+  setDistributions: (distributions: AttributeDistributions) => void;
   suggestedScores: DoshaScores;
   displayVata: number;
   displayPitta: number;
@@ -25,8 +26,8 @@ interface EvaluacionDiagnosticoTabProps {
 }
 
 export function EvaluacionDiagnosticoTab({
-  symptomIntensities,
-  setSymptomIntensities,
+  distributions,
+  setDistributions,
   suggestedScores,
   displayVata,
   displayPitta,
@@ -45,20 +46,17 @@ export function EvaluacionDiagnosticoTab({
   return (
     <div className="grid grid-cols-12 h-full w-full">
       {/* Left Area: Symptoms (Scrollable) */}
-      <div className="col-span-12 lg:col-span-4 border-r border-border/40 h-full overflow-y-auto pl-10 pr-6 pt-6 pb-40 !custom-scrollbar scroll-smooth">
+      <div className="col-span-12 lg:col-span-6 border-r border-border/40 h-full overflow-y-auto pl-10 pr-6 pt-6 pb-40 !custom-scrollbar scroll-smooth">
         <section>
-          <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase flex items-center gap-2">
-            <Activity className="w-4 h-4" /> Checklist Activo
-          </h3>
-          <SymptomChecklist
-            intensities={symptomIntensities}
-            onChange={setSymptomIntensities}
+          <DistributionMatrix
+            distributions={distributions}
+            onChange={setDistributions}
           />
         </section>
       </div>
 
       {/* Right Area: Sliders & Treatment (Scrollable) */}
-      <div className="col-span-12 lg:col-span-8 flex flex-col gap-12 h-full overflow-y-auto pl-10 pr-10 pt-6 pb-40 !custom-scrollbar scroll-smooth">
+      <div className="col-span-12 lg:col-span-6 flex flex-col gap-12 h-full overflow-y-auto pl-10 pr-10 pt-6 pb-40 !custom-scrollbar scroll-smooth">
         {/* 1. Diagnostic */}
         <section>
           <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase">

@@ -1,5 +1,6 @@
 import { prisma } from './prisma';
 import { decrypt } from './encryption';
+import { SymptomSnapshot } from './dosha-scoring';
 
 export interface DecryptedConsultation {
   id: string;
@@ -19,7 +20,7 @@ export interface DecryptedConsultation {
   notes: string | null;
   anamnesis: string | null;
   diagnosis: string | null;
-  symptomSnapshot: Record<string, number> | null;
+  symptomSnapshot: SymptomSnapshot | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,7 +68,7 @@ export async function getConsultationByAppointmentId(
     dailyRoutine: consultation.dailyRoutine,
     agniType: consultation.agniType,
     amaLevel: consultation.amaLevel,
-    symptomSnapshot: consultation.symptomSnapshot as Record<string, number> | null,
+    symptomSnapshot: consultation.symptomSnapshot as SymptomSnapshot | null,
     notes,
     anamnesis,
     diagnosis,
@@ -109,7 +110,7 @@ export async function getConsultationsByPatientId(
       dailyRoutine: consultation.dailyRoutine,
       agniType: consultation.agniType,
       amaLevel: consultation.amaLevel,
-      symptomSnapshot: consultation.symptomSnapshot as Record<string, number> | null,
+      symptomSnapshot: consultation.symptomSnapshot as SymptomSnapshot | null,
       notes,
       anamnesis,
       diagnosis,
