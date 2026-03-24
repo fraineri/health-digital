@@ -7,6 +7,8 @@ import { AgniType } from "./AgniSelector";
 import { DoshaSlider } from "./DoshaSlider";
 import { SymptomChecklist } from "./SymptomChecklist";
 import { ClinicalSynthesisBlock } from "./ClinicalSynthesisBlock";
+import { TreatmentPlanForm } from "./TreatmentPlanForm";
+import { PatientProfileForm } from "./PatientProfileForm";
 import { calculateDoshaScores } from "@/lib/dosha-scoring";
 import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/actions";
 import { DecryptedConsultation } from "@/lib/consultations";
@@ -197,8 +199,19 @@ export function PatientWorkspaceTabs({
         {/* Tab Contents Content Area */}
         <div className="flex-1 overflow-hidden relative">
            
-           <TabsContent value="historia" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden">
-             <div className="text-slate-500 font-medium">Contenido de Historia Clínica: Perfil del paciente (Placeholder)</div>
+           <TabsContent value="historia" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden flex flex-col gap-8 pb-40">
+             <div className="w-full max-w-4xl mx-auto">
+               <PatientProfileForm patient={patient} />
+             </div>
+             
+             {/* Studies Placeholder */}
+             <div className="w-full max-w-4xl mx-auto bg-white rounded-3xl border border-border/40 p-12 flex flex-col items-center justify-center text-center gap-4 text-slate-400 shadow-sm">
+                <FileText className="w-10 h-10 opacity-30 mb-2" />
+                <div>
+                  <h3 className="text-base font-bold text-slate-600 mb-1">Estudios Complementarios</h3>
+                  <p className="text-sm font-medium">Visualización de laboratorios e imágenes médicas (Próximamente)</p>
+                </div>
+             </div>
            </TabsContent>
 
            <TabsContent value="evaluacion" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden overflow-hidden">
@@ -277,8 +290,24 @@ export function PatientWorkspaceTabs({
              </div>
            </TabsContent>
            
-           <TabsContent value="prescripcion" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden">
-             <div className="text-slate-500 font-medium">Contenido de Prescripción: Nutrición y Tratamiento (Placeholder)</div>
+           <TabsContent value="prescripcion" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden pb-40">
+             <div className="w-full max-w-4xl mx-auto">
+                <section className="bg-white rounded-3xl border border-border/40 shadow-sm p-10">
+                  <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-8 uppercase flex items-center gap-2">
+                    <Leaf className="w-4 h-4" /> Plan de Tratamiento
+                  </h3>
+                  <TreatmentPlanForm 
+                    nutritionPlan={nutritionPlan}
+                    phytotherapy={phytotherapy}
+                    dailyRoutine={dailyRoutine}
+                    onChange={(field, val) => {
+                      if (field === "nutritionPlan") setNutritionPlan(val);
+                      if (field === "phytotherapy") setPhytotherapy(val);
+                      if (field === "dailyRoutine") setDailyRoutine(val);
+                    }}
+                  />
+                </section>
+             </div>
            </TabsContent>
 
            <TabsContent value="cuadernillo" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden">
