@@ -122,3 +122,21 @@ Se diseñó e implementó el módulo para recolectar datos demográficos, antece
 - El puntaje se expone como un `ProfileCompletionBadge` pulsante en la cabecera del Workspace.
 - Al hacer clic, se despliega un `PatientProfileSheet` lateral (Shadcn) que no bloquea la vista del listado, persistiendo los datos vía Server Actions y Zod.
 - La estética "Clinical Earthy" presenta campos médicos agrupados en contenedores con dividers suaves y menús desplegables tipados individualmente para evaluar gradientes de hábitos (Ansiedad, Tabaco, Alcohol) de forma más modular.
+
+### Sesión 2026-03-23 — Refactor a Sistema de Tabs (Orquestador Clínico)
+
+El workspace monolítico se refactorizó hacia una arquitectura modular basada en Tabs para agilizar la carga clínica y preparar la escalabilidad.
+
+**1. Orquestador Centralizado (`PatientWorkspaceTabs.tsx`):**
+- Actúa como el *Single Source of Truth* del estado clínico durante la consulta. Mantiene localmente las intensidades de síntomas, los scores de Doshas superpuestos, notas, y esquemas de tratamiento.
+- Reemplazó al antiguo `ConsultationWorkspace.tsx`.
+- Integra el `header` del paciente (antes en `page.tsx`) en su interior para manipular directamente la navegación al tocar el `ProfileCompletionBadge`.
+
+**2. Desacoplamiento de Componentes Funcionales:**
+- El contenido clínico se distribuyó en 5 pestañas: *Historia Clínica*, *Evaluación y Diagnóstico*, *Prescripción Integral*, *Cuadernillo* y *Notas de Consulta*.
+- `PatientProfileSheet` (drawer lateral) fue eliminado en favor de `PatientProfileForm`, que fue extraído para vivir como un formulario inline dentro de la tab "Historia Clínica".
+- `ConsultationHistory` es un nuevo componente read-only que obtiene todo el historial clínico anterior del paciente (descifrando la data en el servidor on-the-fly) para comparativas rápidas, visible nativamente debajo de las notas de sesión.
+
+**3. UX Clínica Avanzada:**
+- El **SaveButton** se mantiene flotante e instanciado una sola vez por fuera del contenedor de pestañas, recolectando la data atómicamente de todos el payload montado, asegurando persistencia ACID.
+- Se replicó el "Split-Pane CSS" (`overflow-y-auto` con `h-full` anidado) dentro de la tab de *Evaluación y Diagnóstico* logrando scroll independiente entre la columna de síntomas y la columna de controles de Dosha.
