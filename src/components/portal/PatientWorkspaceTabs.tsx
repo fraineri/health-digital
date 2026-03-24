@@ -9,6 +9,7 @@ import { SymptomChecklist } from "./SymptomChecklist";
 import { ClinicalSynthesisBlock } from "./ClinicalSynthesisBlock";
 import { TreatmentPlanForm } from "./TreatmentPlanForm";
 import { PatientProfileForm } from "./PatientProfileForm";
+import { ConsultationHistory } from "./ConsultationHistory";
 import { calculateDoshaScores } from "@/lib/dosha-scoring";
 import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/actions";
 import { DecryptedConsultation } from "@/lib/consultations";
@@ -24,12 +25,14 @@ interface PatientWorkspaceTabsProps {
   patient: DecryptedPatientProfile;
   profileScore: number;
   reasonForVisit?: string;
+  historicalConsultations?: DecryptedConsultation[];
 }
 
 export function PatientWorkspaceTabs({ 
   patientId, 
   appointmentId, 
   initialData,
+  historicalConsultations = [],
   patient,
   profileScore,
   reasonForVisit
@@ -310,12 +313,46 @@ export function PatientWorkspaceTabs({
              </div>
            </TabsContent>
 
-           <TabsContent value="cuadernillo" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden">
-             <div className="text-slate-500 font-medium">Contenido de Cuadernillo (Placeholder)</div>
+           <TabsContent value="cuadernillo" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden pb-40">
+             <div className="w-full max-w-4xl mx-auto bg-white rounded-3xl border border-dashed border-border/60 p-16 flex flex-col items-center justify-center text-center gap-6 shadow-sm">
+                <div className="bg-primary/5 p-6 rounded-full">
+                   <BookOpen className="w-12 h-12 text-primary/40" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-700 mb-2">Cuadernillo del Paciente</h3>
+                  <p className="text-slate-500 max-w-md mx-auto">
+                    Módulo en desarrollo. Aquí podrás asignar trackers de hábitos, visualizar los registros diarios del paciente y compartir recursos educativos de forma interactiva.
+                  </p>
+                </div>
+                <button className="mt-4 px-6 py-2.5 bg-slate-100 text-slate-500 rounded-full text-sm font-bold border border-slate-200 cursor-not-allowed">
+                  Próximamente
+                </button>
+             </div>
            </TabsContent>
 
-           <TabsContent value="notas" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden">
-             <div className="text-slate-500 font-medium">Contenido de Notas de Consulta (Placeholder)</div>
+           <TabsContent value="notas" forceMount className="h-full m-0 p-0 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden pb-40">
+             <div className="w-full max-w-4xl mx-auto p-10 flex flex-col gap-12">
+               
+               <section className="bg-white rounded-3xl border border-border/40 shadow-sm p-10 flex flex-col">
+                  <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase flex items-center gap-2">
+                    <FileEdit className="w-4 h-4" /> Notas de la Sesión
+                  </h3>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Escribe tus notas libres aquí..."
+                    className="w-full flex-1 min-h-[300px] bg-slate-50/50 border border-border/40 rounded-2xl p-6 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-y !custom-scrollbar"
+                  />
+               </section>
+
+               <section>
+                 <ConsultationHistory 
+                   consultations={historicalConsultations} 
+                   currentAppointmentId={appointmentId} 
+                 />
+               </section>
+
+             </div>
            </TabsContent>
 
            {/* Floating Actions Overlay */}

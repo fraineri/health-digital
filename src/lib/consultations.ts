@@ -75,3 +75,46 @@ export async function getConsultationByAppointmentId(
     updatedAt: consultation.updatedAt,
   };
 }
+
+/**
+ * Obtiene todas las consultas históricas de un paciente, ordenadas de más reciente a más antigua.
+ * Útil para la pestaña de "Notas de Consulta" (modo solo lectura).
+ */
+export async function getConsultationsByPatientId(
+  patientId: string
+): Promise<DecryptedConsultation[]> {
+  const consultations = await prisma.consultation.findMany({
+    where: { patientId },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return consultations.map(consultation => {
+    // Descifrar campos just-in-time
+    const notes = consultation.encryptedNotes ? decrypt(consultation.encryptedNotes) : null;
+    const anamnesis = consultation.encryptedAnamnesis ? decrypt(consultation.encryptedAnamnesis) : null;
+    const diagnosis = consultation.encryptedDiagnosis ? decrypt(consultation.encryptedDiagnosis) : null;
+
+    return {
+      id: consultation.id,
+      patientId: consultation.patientId,
+      appointmentId: consultation.appointmentId,
+      vataSuggested: consultation.vataSuggested,
+      pittaSuggested: consultation.pittaSuggested,
+      kaphaSuggested: consultation.kaphaSuggested,
+      vataFinal: consultation.vataFinal,
+      pittaFinal: consultation.pittaFinal,
+      kaphaFinal: consultation.kaphaFinal,
+      nutritionPlan: consultation.nutritionPlan,
+      phytotherapy: consultation.phytotherapy,
+      dailyRoutine: consultation.dailyRoutine,
+      agniType: consultation.agniType,
+      amaLevel: consultation.amaLevel,
+      symptomSnapshot: consultation.symptomSnapshot as Record<string, number> | null,
+      notes,
+      anamnesis,
+      diagnosis,
+      createdAt: consultation.createdAt,
+      updatedAt: consultation.updatedAt,
+    };
+  });
+}

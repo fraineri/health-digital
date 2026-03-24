@@ -2,7 +2,7 @@ import { AppointmentInbox } from "@/components/portal/AppointmentInbox";
 import { PatientWorkspaceTabs } from "@/components/portal/PatientWorkspaceTabs";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { getConsultationByAppointmentId } from "@/lib/consultations";
+import { getConsultationByAppointmentId, getConsultationsByPatientId } from "@/lib/consultations";
 import { getPatientProfile, calculateProfileScore } from "@/lib/patient-profile";
 
 export const dynamic = 'force-dynamic';
@@ -46,6 +46,9 @@ export default async function SelectedPatientPage({
     initialConsultationData = await getConsultationByAppointmentId(latestAppointment.id);
   }
 
+  // Fetch consultation history for the read-only Notes tab
+  const historicalConsultations = await getConsultationsByPatientId(id);
+
   return (
     <>
       {/* Column 2: Inbox/Queue (Real Data Server Component) */}
@@ -58,6 +61,7 @@ export default async function SelectedPatientPage({
             patientId={id}
             appointmentId={latestAppointment?.id}
             initialData={initialConsultationData}
+            historicalConsultations={historicalConsultations}
             patient={profile}
             profileScore={profileScore}
             reasonForVisit={triage?.reasonForVisit || undefined}
