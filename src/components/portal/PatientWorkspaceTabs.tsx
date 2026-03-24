@@ -4,11 +4,6 @@ import { useState, useTransition, useMemo, useEffect } from "react";
 import { Wind, Flame, Droplets, Sparkles, Activity, FileText, History, Share2, ClipboardList, BookOpen, Leaf, User, FileEdit } from "lucide-react";
 import { SaveButton } from "./SaveButton";
 import { AgniType } from "./AgniSelector";
-import { DoshaSlider } from "./DoshaSlider";
-import { SymptomChecklist } from "./SymptomChecklist";
-import { ClinicalSynthesisBlock } from "./ClinicalSynthesisBlock";
-import { TreatmentPlanForm } from "./TreatmentPlanForm";
-import { PatientProfileForm } from "./PatientProfileForm";
 import { ConsultationHistory } from "./ConsultationHistory";
 import { calculateDoshaScores } from "@/lib/dosha-scoring";
 import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/actions";
@@ -17,6 +12,13 @@ import { DecryptedPatientProfile } from "@/lib/patient-profile";
 import { SYMPTOM_CATALOG } from "@/lib/symptom-catalog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ProfileCompletionBadge } from "./ProfileCompletionBadge";
+
+// Extracted Tabs
+import { HistoriaClinicaTab } from "./tabs/HistoriaClinicaTab";
+import { EvaluacionDiagnosticoTab } from "./tabs/EvaluacionDiagnosticoTab";
+import { PrescripcionIntegralTab } from "./tabs/PrescripcionIntegralTab";
+import { CuadernilloTab } from "./tabs/CuadernilloTab";
+import { NotasConsultaTab } from "./tabs/NotasConsultaTab";
 
 interface PatientWorkspaceTabsProps {
   patientId: string;
@@ -199,160 +201,58 @@ export function PatientWorkspaceTabs({
           </TabsList>
         </div>
 
-        {/* Tab Contents Content Area */}
+           {/* Tab Contents Content Area */}
         <div className="flex-1 overflow-hidden relative">
            
-           <TabsContent value="historia" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden flex flex-col gap-8 pb-40">
-             <div className="w-full max-w-4xl mx-auto">
-               <PatientProfileForm patient={patient} />
-             </div>
-             
-             {/* Studies Placeholder */}
-             <div className="w-full max-w-4xl mx-auto bg-white rounded-3xl border border-border/40 p-12 flex flex-col items-center justify-center text-center gap-4 text-slate-400 shadow-sm">
-                <FileText className="w-10 h-10 opacity-30 mb-2" />
-                <div>
-                  <h3 className="text-base font-bold text-slate-600 mb-1">Estudios Complementarios</h3>
-                  <p className="text-sm font-medium">Visualización de laboratorios e imágenes médicas (Próximamente)</p>
-                </div>
-             </div>
+           <TabsContent value="historia" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden">
+             <HistoriaClinicaTab patient={patient} />
            </TabsContent>
 
            <TabsContent value="evaluacion" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden overflow-hidden">
-             <div className="grid grid-cols-12 h-full w-full">
-               
-               {/* Left Area: Symptoms (Scrollable) */}
-               <div className="col-span-12 lg:col-span-4 border-r border-border/40 h-full overflow-y-auto pl-10 pr-6 pt-6 pb-40 !custom-scrollbar scroll-smooth">
-                 <section>
-                   <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase flex items-center gap-2">
-                     <Activity className="w-4 h-4" /> Checklist Activo
-                   </h3>
-                   <SymptomChecklist 
-                     intensities={symptomIntensities} 
-                     onChange={setSymptomIntensities} 
-                   />
-                 </section>
-               </div>
-
-               {/* Right Area: Sliders & Treatment (Scrollable) */}
-               <div className="col-span-12 lg:col-span-8 flex flex-col gap-12 h-full overflow-y-auto pl-10 pr-10 pt-6 pb-40 !custom-scrollbar scroll-smooth">
-                 
-                 {/* 1. Diagnostic */}
-                 <section>
-                   <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase">Diagnóstico Doshas (Interactivo)</h3>
-                   <div className="grid grid-cols-3 gap-6">
-                     <DoshaSlider 
-                       name="Vata" 
-                       element="Aire y Espacio"
-                       icon={Wind}
-                       bgClass="bg-vata"
-                       suggestedLevel={suggestedScores.vata}
-                       level={displayVata}
-                       onChange={setVataFinal}
-                       onReset={() => setVataFinal(null)}
-                       active={displayVata > displayPitta && displayVata > displayKapha}
-                     />
-                     <DoshaSlider 
-                       name="Pitta" 
-                       element="Fuego y Agua"
-                       icon={Flame}
-                       bgClass="bg-pitta"
-                       suggestedLevel={suggestedScores.pitta}
-                       level={displayPitta}
-                       onChange={setPittaFinal}
-                       onReset={() => setPittaFinal(null)}
-                       active={displayPitta > displayVata && displayPitta > displayKapha}
-                     />
-                     <DoshaSlider 
-                       name="Kapha" 
-                       element="Tierra y Agua"
-                       icon={Droplets}
-                       bgClass="bg-kapha"
-                       suggestedLevel={suggestedScores.kapha}
-                       level={displayKapha}
-                       onChange={setKaphaFinal}
-                       onReset={() => setKaphaFinal(null)}
-                       active={displayKapha > displayVata && displayKapha > displayPitta}
-                     />
-                   </div>
-                 </section>
-
-                 <section>
-                   <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase">Evaluación y Plan</h3>
-                   <ClinicalSynthesisBlock 
-                     agniType={agniType}
-                     amaLevel={amaLevel}
-                     diagnosis={diagnosis}
-                     onAgniChange={setAgniType}
-                     onAmaChange={setAmaLevel}
-                     onDiagnosisChange={setDiagnosis}
-                     activeSymptomLabels={activeSymptomLabels}
-                   />
-                 </section>
-
-               </div>
-             </div>
+             <EvaluacionDiagnosticoTab
+                symptomIntensities={symptomIntensities}
+                setSymptomIntensities={setSymptomIntensities}
+                suggestedScores={suggestedScores}
+                displayVata={displayVata}
+                displayPitta={displayPitta}
+                displayKapha={displayKapha}
+                setVataFinal={setVataFinal}
+                setPittaFinal={setPittaFinal}
+                setKaphaFinal={setKaphaFinal}
+                agniType={agniType}
+                setAgniType={setAgniType}
+                amaLevel={amaLevel}
+                setAmaLevel={setAmaLevel}
+                diagnosis={diagnosis}
+                setDiagnosis={setDiagnosis}
+                activeSymptomLabels={activeSymptomLabels}
+             />
            </TabsContent>
            
-           <TabsContent value="prescripcion" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden pb-40">
-             <div className="w-full max-w-4xl mx-auto">
-                <section className="bg-white rounded-3xl border border-border/40 shadow-sm p-10">
-                  <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-8 uppercase flex items-center gap-2">
-                    <Leaf className="w-4 h-4" /> Plan de Tratamiento
-                  </h3>
-                  <TreatmentPlanForm 
-                    nutritionPlan={nutritionPlan}
-                    phytotherapy={phytotherapy}
-                    dailyRoutine={dailyRoutine}
-                    onChange={(field, val) => {
-                      if (field === "nutritionPlan") setNutritionPlan(val);
-                      if (field === "phytotherapy") setPhytotherapy(val);
-                      if (field === "dailyRoutine") setDailyRoutine(val);
-                    }}
-                  />
-                </section>
-             </div>
+           <TabsContent value="prescripcion" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden">
+             <PrescripcionIntegralTab
+               nutritionPlan={nutritionPlan}
+               phytotherapy={phytotherapy}
+               dailyRoutine={dailyRoutine}
+               onChange={(field, val) => {
+                 if (field === "nutritionPlan") setNutritionPlan(val);
+                 if (field === "phytotherapy") setPhytotherapy(val);
+                 if (field === "dailyRoutine") setDailyRoutine(val);
+               }}
+             />
            </TabsContent>
 
-           <TabsContent value="cuadernillo" forceMount className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden pb-40">
-             <div className="w-full max-w-4xl mx-auto bg-white rounded-3xl border border-dashed border-border/60 p-16 flex flex-col items-center justify-center text-center gap-6 shadow-sm">
-                <div className="bg-primary/5 p-6 rounded-full">
-                   <BookOpen className="w-12 h-12 text-primary/40" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-700 mb-2">Cuadernillo del Paciente</h3>
-                  <p className="text-slate-500 max-w-md mx-auto">
-                    Módulo en desarrollo. Aquí podrás asignar trackers de hábitos, visualizar los registros diarios del paciente y compartir recursos educativos de forma interactiva.
-                  </p>
-                </div>
-                <button className="mt-4 px-6 py-2.5 bg-slate-100 text-slate-500 rounded-full text-sm font-bold border border-slate-200 cursor-not-allowed">
-                  Próximamente
-                </button>
-             </div>
+           <TabsContent value="cuadernillo" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden">
+             <CuadernilloTab />
            </TabsContent>
 
-           <TabsContent value="notas" forceMount className="h-full m-0 p-0 overflow-y-auto !custom-scrollbar outline-none data-[state=inactive]:hidden pb-40">
-             <div className="w-full max-w-4xl mx-auto p-10 flex flex-col gap-12">
-               
-               <section className="bg-white rounded-3xl border border-border/40 shadow-sm p-10 flex flex-col">
-                  <h3 className="text-xs font-extrabold tracking-[0.15em] text-slate-400 mb-6 uppercase flex items-center gap-2">
-                    <FileEdit className="w-4 h-4" /> Notas de la Sesión
-                  </h3>
-                  <textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Escribe tus notas libres aquí..."
-                    className="w-full flex-1 min-h-[300px] bg-slate-50/50 border border-border/40 rounded-2xl p-6 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-y !custom-scrollbar"
-                  />
-               </section>
-
-               <section>
-                 <ConsultationHistory 
-                   consultations={historicalConsultations} 
-                   currentAppointmentId={appointmentId} 
-                 />
-               </section>
-
-             </div>
+           <TabsContent value="notas" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden">
+             <NotasConsultaTab
+               notes={notes}
+               onNotesChange={setNotes}
+               historicalConsultations={historicalConsultations}
+               currentAppointmentId={appointmentId}
+             />
            </TabsContent>
 
            {/* Floating Actions Overlay */}
