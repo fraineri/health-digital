@@ -1,30 +1,62 @@
-import { FileText } from "lucide-react";
-import { PatientProfileForm } from "../PatientProfileForm";
+"use client";
+
+import { useState } from "react";
+import { User, FileText, Stethoscope } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DecryptedPatientProfile } from "@/lib/patient-profile";
+import { DatosPerfilSubTab } from "./historia-clinica/DatosPerfilSubTab";
+import { EstudiosComplementariosSubTab } from "./historia-clinica/EstudiosComplementariosSubTab";
+import { ExamenFisicoSubTab } from "./historia-clinica/ExamenFisicoSubTab";
 
 interface HistoriaClinicaTabProps {
   patient: DecryptedPatientProfile;
 }
 
+const triggerClassName =
+  "rounded-none px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-400 border-b-2 border-transparent transition-all duration-200 hover:text-slate-600 data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:shadow-none data-[state=active]:bg-transparent";
+
+const contentClassName =
+  "h-full m-0 p-0 outline-none ring-0 data-[state=inactive]:hidden data-[state=active]:animate-subtab-in";
+
 export function HistoriaClinicaTab({ patient }: HistoriaClinicaTabProps) {
+  const [activeSubTab, setActiveSubTab] = useState("perfil");
+
   return (
-    <div className="h-full m-0 p-10 overflow-y-auto !custom-scrollbar flex flex-col gap-8 pb-40">
-      <div className="w-full max-w-4xl mx-auto">
-        <PatientProfileForm patient={patient} />
+    <Tabs
+      value={activeSubTab}
+      onValueChange={setActiveSubTab}
+      className="h-full flex flex-col"
+    >
+      {/* Sub-Tab Bar — sticky, compacto, underline style */}
+      <div className="px-10 pt-4 shrink-0 bg-workspace border-b border-border/30">
+        <TabsList className="bg-transparent h-auto p-0 gap-0 w-auto inline-flex">
+          <TabsTrigger value="perfil" className={triggerClassName}>
+            <User className="w-3.5 h-3.5 mr-1.5" />
+            Datos del Perfil
+          </TabsTrigger>
+          <TabsTrigger value="estudios" className={triggerClassName}>
+            <FileText className="w-3.5 h-3.5 mr-1.5" />
+            Estudios Complementarios
+          </TabsTrigger>
+          <TabsTrigger value="examen" className={triggerClassName}>
+            <Stethoscope className="w-3.5 h-3.5 mr-1.5" />
+            Examen Físico
+          </TabsTrigger>
+        </TabsList>
       </div>
 
-      {/* Studies Placeholder */}
-      <div className="w-full max-w-4xl mx-auto bg-white rounded-3xl border border-border/40 p-12 flex flex-col items-center justify-center text-center gap-4 text-slate-400 shadow-sm">
-        <FileText className="w-10 h-10 opacity-30 mb-2" />
-        <div>
-          <h3 className="text-base font-bold text-slate-600 mb-1">
-            Estudios Complementarios
-          </h3>
-          <p className="text-sm font-medium">
-            Visualización de laboratorios e imágenes médicas (Próximamente)
-          </p>
-        </div>
+      {/* Sub-Tab Content — scrollable independiente */}
+      <div className="flex-1 overflow-hidden">
+        <TabsContent value="perfil" forceMount className={contentClassName}>
+          <DatosPerfilSubTab patient={patient} />
+        </TabsContent>
+        <TabsContent value="estudios" forceMount className={contentClassName}>
+          <EstudiosComplementariosSubTab />
+        </TabsContent>
+        <TabsContent value="examen" forceMount className={contentClassName}>
+          <ExamenFisicoSubTab />
+        </TabsContent>
       </div>
-    </div>
+    </Tabs>
   );
 }
