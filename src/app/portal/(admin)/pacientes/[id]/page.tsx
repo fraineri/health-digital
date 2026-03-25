@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { getConsultationByAppointmentId, getConsultationsByPatientId } from "@/lib/consultations";
 import { getPatientProfile, calculateProfileScore } from "@/lib/patient-profile";
+import { getStudyCatalogNames, getLatestStudiesForPatient } from "@/lib/study-catalog";
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +50,10 @@ export default async function SelectedPatientPage({
   // Fetch consultation history for the read-only Notes tab
   const historicalConsultations = await getConsultationsByPatientId(id);
 
+  // Fetch study catalog and patient's latest study values
+  const studyCatalog = await getStudyCatalogNames();
+  const latestStudies = await getLatestStudiesForPatient(id);
+
   return (
     <>
       {/* Column 2: Inbox/Queue (Real Data Server Component) */}
@@ -57,7 +62,7 @@ export default async function SelectedPatientPage({
       {/* Column 3: Clinical Workspace */}
       <div className="flex-1 bg-workspace relative flex flex-col h-full overflow-hidden">
         {profile && (
-          <PatientWorkspaceTabs 
+          <PatientWorkspaceTabs
             patientId={id}
             appointmentId={latestAppointment?.id}
             initialData={initialConsultationData}
@@ -65,6 +70,8 @@ export default async function SelectedPatientPage({
             patient={profile}
             profileScore={profileScore}
             reasonForVisit={triage?.reasonForVisit || undefined}
+            studyCatalog={studyCatalog}
+            initialStudies={latestStudies}
           />
         )}
       </div>

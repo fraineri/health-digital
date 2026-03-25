@@ -5,6 +5,7 @@ import { encrypt } from "@/lib/encryption";
 import { calculateDoshaScoresV2, SymptomSnapshotV2 } from "@/lib/dosha-scoring";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
+import { StudyPayloadEntry } from "@/lib/study-catalog";
 
 export interface SaveConsultationInput {
   patientId: string;
@@ -21,6 +22,7 @@ export interface SaveConsultationInput {
   notes: string | null;          // Plain text
   anamnesis: string | null;      // Plain text
   diagnosis: string | null;      // Plain text
+  studies?: StudyPayloadEntry[];  // Estudios complementarios (opcional)
 }
 
 export async function saveConsultation(
@@ -70,15 +72,19 @@ export async function saveConsultation(
 
     // Usamos una transacción para guardar la consulta y actualizar el turno a DONE atómicamente
     await prisma.$transaction(async (tx) => {
+      let consultationId: string;
+
       if (existingConsultation) {
         await tx.consultation.update({
           where: { id: existingConsultation.id },
           data
         });
+        consultationId = existingConsultation.id;
       } else {
-        await tx.consultation.create({
+        const newConsultation = await tx.consultation.create({
           data
         });
+        consultationId = newConsultation.id;
       }
 
       // 4. Marcar Cita como Terminada ("DONE")
@@ -87,6 +93,32 @@ export async function saveConsultation(
           where: { id: input.appointmentId },
           data: { status: "DONE" }
         });
+      }
+
+      // 5. Persistir Estudios Complementarios
+      if (input.studies && input.studies.length > 0) {
+        // 5a. Upsert en StudyCatalog para nombres nuevos
+        for (const study of input.studies) {
+          await tx.studyCatalog.upsert({
+            where: { name: study.studyName },
+            update: {},
+            create: { name: study.studyName }
+          });
+        }
+
+        // 5b. Crear registros de ComplementaryStudy con valores encriptados
+        const studiesWithValues = input.studies.filter(s => s.value.trim() !== "");
+
+        if (studiesWithValues.length > 0) {
+          await tx.complementaryStudy.createMany({
+            data: studiesWithValues.map(s => ({
+              patientId: input.patientId,
+              consultationId,
+              studyName: s.studyName,
+              encryptedValue: encrypt(s.value)
+            }))
+          });
+        }
       }
     });
 

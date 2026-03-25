@@ -4,12 +4,16 @@ import { useState } from "react";
 import { User, FileText, Stethoscope } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { DecryptedPatientProfile } from "@/lib/patient-profile";
+import { StudyEntry } from "@/lib/study-catalog";
 import { DatosPerfilSubTab } from "./historia-clinica/DatosPerfilSubTab";
 import { EstudiosComplementariosSubTab } from "./historia-clinica/EstudiosComplementariosSubTab";
 import { ExamenFisicoSubTab } from "./historia-clinica/ExamenFisicoSubTab";
 
 interface HistoriaClinicaTabProps {
   patient: DecryptedPatientProfile;
+  studies: StudyEntry[];
+  onStudiesChange: (studies: StudyEntry[]) => void;
+  studyCatalog: string[];
 }
 
 const triggerClassName =
@@ -18,7 +22,7 @@ const triggerClassName =
 const contentClassName =
   "h-full m-0 p-0 outline-none ring-0 data-[state=inactive]:hidden data-[state=active]:animate-subtab-in";
 
-export function HistoriaClinicaTab({ patient }: HistoriaClinicaTabProps) {
+export function HistoriaClinicaTab({ patient, studies, onStudiesChange, studyCatalog }: HistoriaClinicaTabProps) {
   const [activeSubTab, setActiveSubTab] = useState("perfil");
 
   return (
@@ -51,7 +55,11 @@ export function HistoriaClinicaTab({ patient }: HistoriaClinicaTabProps) {
           <DatosPerfilSubTab patient={patient} />
         </TabsContent>
         <TabsContent value="estudios" forceMount className={contentClassName}>
-          <EstudiosComplementariosSubTab />
+          <EstudiosComplementariosSubTab
+            studies={studies}
+            onStudiesChange={onStudiesChange}
+            studyCatalog={studyCatalog}
+          />
         </TabsContent>
         <TabsContent value="examen" forceMount className={contentClassName}>
           <ExamenFisicoSubTab />

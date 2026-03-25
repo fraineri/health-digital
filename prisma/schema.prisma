@@ -34,6 +34,7 @@ model Patient {
   // Relaciones
   appointments            Appointment[]
   consultations           Consultation[]
+  complementaryStudies    ComplementaryStudy[]
 }
 
 enum AppointmentType {
@@ -120,7 +121,31 @@ model Consultation {
   // — Symptom Scores (snapshot del checklist) —
   symptomSnapshot    Json?        // Snapshot de los síntomas marcados
 
+  // — Estudios Complementarios —
+  complementaryStudies  ComplementaryStudy[]
+
   // — Metadata —
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
+}
+
+model StudyCatalog {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ComplementaryStudy {
+  id              String       @id @default(uuid())
+  patientId       String
+  patient         Patient      @relation(fields: [patientId], references: [id])
+  consultationId  String
+  consultation    Consultation @relation(fields: [consultationId], references: [id])
+  studyName       String
+  encryptedValue  String
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([patientId, studyName, createdAt])
 }

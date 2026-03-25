@@ -9,6 +9,7 @@ import { calculateDoshaScoresV2, isV2Snapshot } from "@/lib/dosha-scoring";
 import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/actions";
 import { DecryptedConsultation } from "@/lib/consultations";
 import { DecryptedPatientProfile } from "@/lib/patient-profile";
+import { StudyEntry, DecryptedStudyEntry } from "@/lib/study-catalog";
 import { ATTRIBUTE_CATALOG, AttributeDistributions } from "@/lib/attribute-catalog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ProfileCompletionBadge } from "./ProfileCompletionBadge";
@@ -28,16 +29,20 @@ interface PatientWorkspaceTabsProps {
   profileScore: number;
   reasonForVisit?: string;
   historicalConsultations?: DecryptedConsultation[];
+  studyCatalog: string[];
+  initialStudies: DecryptedStudyEntry[];
 }
 
-export function PatientWorkspaceTabs({ 
-  patientId, 
-  appointmentId, 
+export function PatientWorkspaceTabs({
+  patientId,
+  appointmentId,
   initialData,
   historicalConsultations = [],
   patient,
   profileScore,
-  reasonForVisit
+  reasonForVisit,
+  studyCatalog,
+  initialStudies
 }: PatientWorkspaceTabsProps) {
   // --- 0. Tab State ---
   const [activeTab, setActiveTab] = useState("historia");
@@ -68,6 +73,17 @@ export function PatientWorkspaceTabs({
   const [notes, setNotes] = useState(initialData?.notes || "");
   const [anamnesis, setAnamnesis] = useState(initialData?.anamnesis || "");
   const [diagnosis, setDiagnosis] = useState(initialData?.diagnosis || "");
+
+  const [studies, setStudies] = useState<StudyEntry[]>(() =>
+    initialStudies.map(s => ({
+      id: crypto.randomUUID(),
+      studyName: s.studyName,
+      value: s.value,
+      previousValue: s.value,
+      previousDate: s.createdAt,
+      isNew: false
+    }))
+  );
 
   const [isPending, startTransition] = useTransition();
   const [isSuccess, setIsSuccess] = useState(false);
@@ -103,8 +119,11 @@ export function PatientWorkspaceTabs({
     const hasDistributions = Object.values(distributions).some(
       d => d.vata + d.pitta + d.kapha > 0
     );
-    return hasDistributions || notes !== "" || diagnosis !== "" || vataFinal !== null || agniType !== null || amaLevel !== 0;
-  }, [distributions, notes, diagnosis, vataFinal, agniType, amaLevel]);
+    const hasStudyChanges = studies.some(s =>
+      (s.isNew && s.value.trim() !== "") || s.previousValue !== s.value
+    );
+    return hasDistributions || notes !== "" || diagnosis !== "" || vataFinal !== null || agniType !== null || amaLevel !== 0 || hasStudyChanges;
+  }, [distributions, notes, diagnosis, vataFinal, agniType, amaLevel, studies]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -138,7 +157,10 @@ export function PatientWorkspaceTabs({
         amaLevel,
         notes,
         anamnesis: null, // As decided, removing anamnesis from UI but maintaining in API
-        diagnosis
+        diagnosis,
+        studies: studies
+          .filter(s => s.value.trim() !== "")
+          .map(s => ({ studyName: s.studyName, value: s.value }))
       };
 
       const result = await saveConsultation(input);
@@ -212,7 +234,12 @@ export function PatientWorkspaceTabs({
         <div className="flex-1 overflow-hidden relative">
            
            <TabsContent value="historia" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden">
-             <HistoriaClinicaTab patient={patient} />
+             <HistoriaClinicaTab
+               patient={patient}
+               studies={studies}
+               onStudiesChange={setStudies}
+               studyCatalog={studyCatalog}
+             />
            </TabsContent>
 
            <TabsContent value="evaluacion" forceMount className="h-full m-0 p-0 outline-none data-[state=inactive]:hidden">
