@@ -292,7 +292,7 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
       {/* Action Footer */}
       <div className="p-8 border-t border-border/40 bg-slate-50 flex items-center justify-between">
          <span className="text-xs text-slate-500 font-medium">
-           Actualizado: {patient.lastProfileUpdate ? new Date(patient.lastProfileUpdate).toLocaleDateString() : 'Nunca'}
+           Actualizado: {patient.lastProfileUpdate ? new Date(patient.lastProfileUpdate).toLocaleDateString('es-AR') : 'Nunca'}
          </span>
          <div className="flex items-center gap-4">
            {isSuccess && <span className="text-sm font-bold text-primary">¡Guardado con éxito!</span>}

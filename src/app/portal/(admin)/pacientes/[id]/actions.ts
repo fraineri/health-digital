@@ -70,6 +70,18 @@ export async function saveConsultation(
       encryptedDiagnosis,
     };
 
+    // 4. Upsert StudyCatalog para nombres nuevos ANTES de la transaccion
+    // (operacion idempotente, no necesita ser atomica con el guardado clinico)
+    if (input.studies && input.studies.length > 0) {
+      for (const study of input.studies) {
+        await prisma.studyCatalog.upsert({
+          where: { name: study.studyName },
+          update: {},
+          create: { name: study.studyName }
+        });
+      }
+    }
+
     // Usamos una transacción para guardar la consulta y actualizar el turno a DONE atómicamente
     await prisma.$transaction(async (tx) => {
       let consultationId: string;
@@ -87,7 +99,7 @@ export async function saveConsultation(
         consultationId = newConsultation.id;
       }
 
-      // 4. Marcar Cita como Terminada ("DONE")
+      // 5. Marcar Cita como Terminada ("DONE")
       if (input.appointmentId) {
         await tx.appointment.update({
           where: { id: input.appointmentId },
@@ -95,18 +107,8 @@ export async function saveConsultation(
         });
       }
 
-      // 5. Persistir Estudios Complementarios
+      // 6. Persistir Estudios Complementarios con valores encriptados
       if (input.studies && input.studies.length > 0) {
-        // 5a. Upsert en StudyCatalog para nombres nuevos
-        for (const study of input.studies) {
-          await tx.studyCatalog.upsert({
-            where: { name: study.studyName },
-            update: {},
-            create: { name: study.studyName }
-          });
-        }
-
-        // 5b. Crear registros de ComplementaryStudy con valores encriptados
         const studiesWithValues = input.studies.filter(s => s.value.trim() !== "");
 
         if (studiesWithValues.length > 0) {

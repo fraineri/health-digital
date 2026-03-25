@@ -140,3 +140,28 @@ El workspace monolítico se refactorizó hacia una arquitectura modular basada e
 **3. UX Clínica Avanzada:**
 - El **SaveButton** se mantiene flotante e instanciado una sola vez por fuera del contenedor de pestañas, recolectando la data atómicamente de todos el payload montado, asegurando persistencia ACID.
 - Se replicó el "Split-Pane CSS" (`overflow-y-auto` con `h-full` anidado) dentro de la tab de *Evaluación y Diagnóstico* logrando scroll independiente entre la columna de síntomas y la columna de controles de Dosha.
+
+### Sesión 2026-03-25 — Sub-Tabs dentro de Historia Clínica
+
+Se refactorizó `HistoriaClinicaTab.tsx` de un layout apilado a un sub-orquestador con navegación interna, preparando la estructura para escalar clínicamente.
+
+**1. Arquitectura de Sub-Tabs (Radix Tabs Anidados):**
+- `HistoriaClinicaTab` pasó a ser un sub-orquestador con estado local `activeSubTab` (default: `"perfil"`). La interfaz pública del componente (props) no cambió, por lo que `PatientWorkspaceTabs.tsx` no requirió modificaciones.
+- Se creó la carpeta `src/components/portal/tabs/historia-clinica/` con tres sub-componentes: `DatosPerfilSubTab`, `EstudiosComplementariosSubTab` y `ExamenFisicoSubTab`.
+
+**2. Preservación de Estado del Formulario (Patrón `forceMount` + CSS Hide):**
+- Se replicó el patrón ya validado en `PatientWorkspaceTabs.tsx`: `forceMount` en cada `TabsContent` + `data-[state=inactive]:hidden`. Esto garantiza que el DOM de `PatientProfileForm` permanece montado al cambiar sub-tabs, preservando todos los campos ingresados sin desmontar el componente.
+
+**3. Diferenciación Visual Jerárquica:**
+- Las sub-tabs usan estilo **underline** (`border-b-2`, `text-xs uppercase tracking-wide`) contrastando con el estilo **pill** de las tabs padre. Verde Salvia (`--color-primary`) actúa como indicador de sub-tab activa.
+- La sub-tab bar es `shrink-0` (nunca scrollea); solo el contenido interior de cada sub-tab tiene `overflow-y-auto`.
+
+**4. Animación CSS Pura:**
+- Se agregó `@keyframes subtab-fade-in` en `portal.css` con clase `.animate-subtab-in` (200ms ease-out, fade + translateY(4px→0)) dado que `tailwindcss-animate` no está instalado en el proyecto.
+
+**Commit:** `2f808fd` — `feat(portal): add sub-tab navigation to Historia Clinica tab`
+
+**Post-Launch / Backlog identificado:**
+- Funcionalidad real de Estudios Complementarios (laboratorios, imágenes médicas).
+- Funcionalidad real de Examen Físico (signos vitales, hallazgos clínicos).
+- Forzar navegación directa a sub-tab "perfil" desde `ProfileCompletionBadge`.
