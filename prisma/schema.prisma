@@ -121,6 +121,9 @@ model Consultation {
   // — Symptom Scores (snapshot del checklist) —
   symptomSnapshot    Json?        // Snapshot de los síntomas marcados
 
+  // — Examen Fisico (JSON snapshot) —
+  physicalExamSnapshot  Json?     // PhysicalExamSnapshot tipado via Zod + TypeScript
+
   // — Estudios Complementarios —
   complementaryStudies  ComplementaryStudy[]
 

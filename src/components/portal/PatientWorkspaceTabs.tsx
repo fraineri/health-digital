@@ -11,6 +11,7 @@ import { DecryptedConsultation } from "@/lib/consultations";
 import { DecryptedPatientProfile } from "@/lib/patient-profile";
 import { StudyEntry, DecryptedStudyEntry } from "@/lib/study-catalog";
 import { ATTRIBUTE_CATALOG, AttributeDistributions } from "@/lib/attribute-catalog";
+import { PhysicalExamData, DEFAULT_PHYSICAL_EXAM } from "@/lib/physical-exam";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ProfileCompletionBadge } from "./ProfileCompletionBadge";
 
@@ -85,6 +86,10 @@ export function PatientWorkspaceTabs({
     }))
   );
 
+  const [physicalExam, setPhysicalExam] = useState<PhysicalExamData>(
+    initialData?.physicalExam ?? DEFAULT_PHYSICAL_EXAM
+  );
+
   const [isPending, startTransition] = useTransition();
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -114,6 +119,24 @@ export function PatientWorkspaceTabs({
       });
   }, [distributions]);
 
+  // Extraer physicalExam de la consulta historica mas reciente (distinta a la actual)
+  const previousExam = useMemo(() => {
+    const prev = historicalConsultations.find(c => c.id !== initialData?.id);
+    return prev?.physicalExam ?? null;
+  }, [historicalConsultations, initialData?.id]);
+
+  const hasPhysicalExamChanges = useMemo(() => {
+    const e = physicalExam;
+    return (
+      e.weight !== null || e.height !== null ||
+      e.systolicBP !== null || e.diastolicBP !== null ||
+      e.heartRate !== null || e.oxygenSaturation !== null ||
+      e.temperature !== null || e.respiratoryRate !== null ||
+      e.tongue !== "" || e.pulse !== "" ||
+      e.skinNailsEyes !== "" || e.findings !== ""
+    );
+  }, [physicalExam]);
+
   // Protect against accidental closure if dirty
   const isDirty = useMemo(() => {
     const hasDistributions = Object.values(distributions).some(
@@ -122,8 +145,8 @@ export function PatientWorkspaceTabs({
     const hasStudyChanges = studies.some(s =>
       (s.isNew && s.value.trim() !== "") || s.previousValue !== s.value
     );
-    return hasDistributions || notes !== "" || diagnosis !== "" || vataFinal !== null || agniType !== null || amaLevel !== 0 || hasStudyChanges;
-  }, [distributions, notes, diagnosis, vataFinal, agniType, amaLevel, studies]);
+    return hasDistributions || notes !== "" || diagnosis !== "" || vataFinal !== null || agniType !== null || amaLevel !== 0 || hasStudyChanges || hasPhysicalExamChanges;
+  }, [distributions, notes, diagnosis, vataFinal, agniType, amaLevel, studies, hasPhysicalExamChanges]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -160,7 +183,8 @@ export function PatientWorkspaceTabs({
         diagnosis,
         studies: studies
           .filter(s => s.value.trim() !== "")
-          .map(s => ({ studyName: s.studyName, value: s.value }))
+          .map(s => ({ studyName: s.studyName, value: s.value })),
+        physicalExam: hasPhysicalExamChanges ? physicalExam : null,
       };
 
       const result = await saveConsultation(input);
@@ -239,6 +263,9 @@ export function PatientWorkspaceTabs({
                studies={studies}
                onStudiesChange={setStudies}
                studyCatalog={studyCatalog}
+               physicalExam={physicalExam}
+               onPhysicalExamChange={setPhysicalExam}
+               previousExam={previousExam}
              />
            </TabsContent>
 

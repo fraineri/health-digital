@@ -6,6 +6,8 @@ import { calculateDoshaScoresV2, SymptomSnapshotV2 } from "@/lib/dosha-scoring";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
 import { StudyPayloadEntry } from "@/lib/study-catalog";
+import { PhysicalExamPayload, PhysicalExamPayloadSchema } from "@/lib/physical-exam";
+import { toPhysicalExamDB } from "@/lib/physical-exam-server";
 
 export interface SaveConsultationInput {
   patientId: string;
@@ -23,6 +25,7 @@ export interface SaveConsultationInput {
   anamnesis: string | null;      // Plain text
   diagnosis: string | null;      // Plain text
   studies?: StudyPayloadEntry[];  // Estudios complementarios (opcional)
+  physicalExam?: PhysicalExamPayload | null;  // Examen fisico (opcional)
 }
 
 export async function saveConsultation(
@@ -36,6 +39,16 @@ export async function saveConsultation(
     const encryptedNotes = input.notes ? encrypt(input.notes) : null;
     const encryptedAnamnesis = input.anamnesis ? encrypt(input.anamnesis) : null;
     const encryptedDiagnosis = input.diagnosis ? encrypt(input.diagnosis) : null;
+
+    // 2b. Validar y transformar examen fisico
+    let physicalExamSnapshot: Prisma.InputJsonValue | undefined = undefined;
+    if (input.physicalExam) {
+      const parsed = PhysicalExamPayloadSchema.safeParse(input.physicalExam);
+      if (!parsed.success) {
+        return { success: false, error: "Datos del examen físico inválidos: " + parsed.error.issues.map(i => i.message).join(", ") };
+      }
+      physicalExamSnapshot = toPhysicalExamDB(parsed.data) as unknown as Prisma.InputJsonValue;
+    }
 
     // 3. Crear o actualizar la consulta
     // Si tenemos appointmentId, lo usamos para el upsert (ya que la relación es unívoca / 1:1 conceptualmente)
@@ -68,6 +81,7 @@ export async function saveConsultation(
       encryptedNotes,
       encryptedAnamnesis,
       encryptedDiagnosis,
+      ...(physicalExamSnapshot !== undefined && { physicalExamSnapshot }),
     };
 
     // 4. Upsert StudyCatalog para nombres nuevos ANTES de la transaccion

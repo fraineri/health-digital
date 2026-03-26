@@ -1,6 +1,8 @@
 import { prisma } from './prisma';
 import { decrypt } from './encryption';
 import { SymptomSnapshot } from './dosha-scoring';
+import { PhysicalExamData } from './physical-exam';
+import { fromPhysicalExamDB } from './physical-exam-server';
 
 export interface DecryptedConsultation {
   id: string;
@@ -21,6 +23,7 @@ export interface DecryptedConsultation {
   anamnesis: string | null;
   diagnosis: string | null;
   symptomSnapshot: SymptomSnapshot | null;
+  physicalExam: PhysicalExamData | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,6 +56,10 @@ export async function getConsultationByAppointmentId(
     ? decrypt(consultation.encryptedDiagnosis)
     : null;
 
+  const physicalExam = consultation.physicalExamSnapshot
+    ? fromPhysicalExamDB(consultation.physicalExamSnapshot)
+    : null;
+
   return {
     id: consultation.id,
     patientId: consultation.patientId,
@@ -69,6 +76,7 @@ export async function getConsultationByAppointmentId(
     agniType: consultation.agniType,
     amaLevel: consultation.amaLevel,
     symptomSnapshot: consultation.symptomSnapshot as SymptomSnapshot | null,
+    physicalExam,
     notes,
     anamnesis,
     diagnosis,
@@ -95,6 +103,10 @@ export async function getConsultationsByPatientId(
     const anamnesis = consultation.encryptedAnamnesis ? decrypt(consultation.encryptedAnamnesis) : null;
     const diagnosis = consultation.encryptedDiagnosis ? decrypt(consultation.encryptedDiagnosis) : null;
 
+    const physicalExam = consultation.physicalExamSnapshot
+      ? fromPhysicalExamDB(consultation.physicalExamSnapshot)
+      : null;
+
     return {
       id: consultation.id,
       patientId: consultation.patientId,
@@ -111,6 +123,7 @@ export async function getConsultationsByPatientId(
       agniType: consultation.agniType,
       amaLevel: consultation.amaLevel,
       symptomSnapshot: consultation.symptomSnapshot as SymptomSnapshot | null,
+      physicalExam,
       notes,
       anamnesis,
       diagnosis,
