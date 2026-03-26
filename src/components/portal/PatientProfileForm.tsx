@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { User, Activity, AlertCircle, Heart } from "lucide-react";
 import { ProfileFormSection } from "./ProfileFormSection";
 import { DecryptedPatientProfile } from "@/queries/patient-profile";
-import { savePatientProfile } from "@/app/portal/(admin)/pacientes/[id]/profile-actions";
+import { savePatientProfile } from "@/app/portal/(admin)/pacientes/[id]/_actions/profile";
 
 interface PatientProfileFormProps {
   patient: DecryptedPatientProfile;

@@ -6,7 +6,7 @@ import { SaveButton } from "./SaveButton";
 import { AgniType } from "./AgniSelector";
 import { ConsultationHistory } from "./ConsultationHistory";
 import { calculateDoshaScoresV2, isV2Snapshot } from "@/domain/ayurveda/dosha-scoring";
-import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/actions";
+import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/_actions/consultation";
 import { DecryptedConsultation } from "@/queries/consultations";
 import { DecryptedPatientProfile } from "@/queries/patient-profile";
 import { StudyEntry, DecryptedStudyEntry } from "@/domain/ayurveda/study-catalog";

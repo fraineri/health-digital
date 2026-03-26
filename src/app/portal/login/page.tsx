@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { authenticate } from "./actions";
+import { authenticate } from "./_actions/auth";
 import { Leaf } from "lucide-react";
 
 export default function LoginPage() {

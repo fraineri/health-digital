@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Menu, Calendar, Users, Settings, User as UserIcon, LogOut, X } from "lucide-react";
-import { signOutUser } from "@/app/portal/(admin)/actions";
+import { signOutUser } from "@/app/portal/(admin)/_actions/session";
 import Link from "next/link";
 
 interface NavigationDrawerProps {
