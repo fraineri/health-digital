@@ -1,5 +1,5 @@
-import { AppointmentInbox } from "@/components/portal/AppointmentInbox";
-import { PatientWorkspaceTabs } from "@/components/portal/PatientWorkspaceTabs";
+import { AppointmentInbox } from "@/app/portal/(admin)/_components/AppointmentInbox";
+import { PatientWorkspaceTabs } from "./_components/PatientWorkspaceTabs";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { getConsultationByAppointmentId, getConsultationsByPatientId } from "@/queries/consultations";

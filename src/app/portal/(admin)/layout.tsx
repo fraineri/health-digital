@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { NavigationDrawer } from "@/components/portal/NavigationDrawer";
+import { NavigationDrawer } from "./_components/NavigationDrawer";
 
 export default async function AdminLayout({
   children,
