@@ -1,13 +1,13 @@
-import Navbar from '@/components/Navbar/Navbar';
-import Hero from '@/components/Hero/Hero';
-import Authority from '@/components/Authority/Authority';
-import ServicePath from '@/components/ServicePath/ServicePath';
-import AboutMe from '@/components/AboutMe/AboutMe';
-import Specialties from '@/components/Specialties/Specialties';
-import Testimonials from '@/components/Testimonials/Testimonials';
-import FAQ from '@/components/FAQ/FAQ';
-import BookingWidget from '@/components/BookingWidget/BookingWidget';
-import Footer from '@/components/Footer/Footer';
+import Navbar from './_components/Navbar/Navbar';
+import Hero from './_components/Hero/Hero';
+import Authority from './_components/Authority/Authority';
+import ServicePath from './_components/ServicePath/ServicePath';
+import AboutMe from './_components/AboutMe/AboutMe';
+import Specialties from './_components/Specialties/Specialties';
+import Testimonials from './_components/Testimonials/Testimonials';
+import FAQ from './_components/FAQ/FAQ';
+import BookingWidget from './_components/BookingWidget/BookingWidget';
+import Footer from './_components/Footer/Footer';
 
 export default function Home() {
   return (
