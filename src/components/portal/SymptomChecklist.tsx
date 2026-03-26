@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { SYMPTOM_CATALOG, Symptom } from "@/lib/symptom-catalog";
+import { SYMPTOM_CATALOG, Symptom } from "@/domain/ayurveda/symptom-catalog";
 
 interface SymptomChecklistProps {
   intensities: Record<string, number>;

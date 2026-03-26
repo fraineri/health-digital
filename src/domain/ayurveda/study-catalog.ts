@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { decrypt } from './encryption';
+import { prisma } from '@/lib/prisma';
+import { decrypt } from '@/lib/encryption';
 
 // --- Tipo para datos desencriptados desde la BD ---
 export interface DecryptedStudyEntry {

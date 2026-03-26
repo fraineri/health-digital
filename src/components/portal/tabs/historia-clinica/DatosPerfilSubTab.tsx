@@ -1,4 +1,4 @@
-import { DecryptedPatientProfile } from "@/lib/patient-profile";
+import { DecryptedPatientProfile } from "@/queries/patient-profile";
 import { PatientProfileForm } from "../../PatientProfileForm";
 
 interface DatosPerfilSubTabProps {

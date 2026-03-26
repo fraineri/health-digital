@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { DecryptedConsultation } from "@/lib/consultations";
-import { isV2Snapshot } from "@/lib/dosha-scoring";
+import { DecryptedConsultation } from "@/queries/consultations";
+import { isV2Snapshot } from "@/domain/ayurveda/dosha-scoring";
 import { Calendar, ChevronDown, ChevronUp, FileText, Activity } from "lucide-react";
 
 interface ConsultationHistoryProps {

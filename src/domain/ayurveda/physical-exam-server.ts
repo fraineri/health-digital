@@ -1,4 +1,4 @@
-import { encrypt, decrypt } from "./encryption";
+import { encrypt, decrypt } from "@/lib/encryption";
 import {
   PhysicalExamData,
   PhysicalExamSnapshotDB,

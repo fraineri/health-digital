@@ -1,5 +1,5 @@
-import { prisma } from './prisma';
-import { decrypt } from './encryption';
+import { prisma } from '@/lib/prisma';
+import { decrypt } from '@/lib/encryption';
 import { Patient } from '@prisma/client';
 
 export interface PatientLifestyle {

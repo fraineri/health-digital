@@ -1,8 +1,8 @@
-import { prisma } from './prisma';
-import { decrypt } from './encryption';
-import { SymptomSnapshot } from './dosha-scoring';
-import { PhysicalExamData } from './physical-exam';
-import { fromPhysicalExamDB } from './physical-exam-server';
+import { prisma } from '@/lib/prisma';
+import { decrypt } from '@/lib/encryption';
+import { SymptomSnapshot } from '@/domain/ayurveda/dosha-scoring';
+import { PhysicalExamData } from '@/domain/ayurveda/physical-exam';
+import { fromPhysicalExamDB } from '@/domain/ayurveda/physical-exam-server';
 
 export interface DecryptedConsultation {
   id: string;

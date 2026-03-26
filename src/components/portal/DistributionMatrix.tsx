@@ -8,7 +8,7 @@ import {
   DoshaKey,
   PrakrutiAttribute,
   POINTS_PER_ROW,
-} from "@/lib/attribute-catalog";
+} from "@/domain/ayurveda/attribute-catalog";
 
 // ─── Dosha Configuration ─────────────────────────────────────────────────────
 const DOSHA_CONFIG = {

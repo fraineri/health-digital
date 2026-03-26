@@ -1,8 +1,8 @@
 import { Wind, Flame, Droplets } from "lucide-react";
 import { DistributionMatrix } from "../DistributionMatrix";
 import { DoshaSlider } from "../DoshaSlider";
-import { DoshaScores } from "@/lib/dosha-scoring";
-import { AttributeDistributions } from "@/lib/attribute-catalog";
+import { DoshaScores } from "@/domain/ayurveda/dosha-scoring";
+import { AttributeDistributions } from "@/domain/ayurveda/attribute-catalog";
 
 interface EvaluacionDiagnosticoTabProps {
   distributions: AttributeDistributions;

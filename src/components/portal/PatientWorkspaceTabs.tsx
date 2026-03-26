@@ -5,13 +5,13 @@ import { Wind, Flame, Droplets, Sparkles, Activity, FileText, History, Share2, C
 import { SaveButton } from "./SaveButton";
 import { AgniType } from "./AgniSelector";
 import { ConsultationHistory } from "./ConsultationHistory";
-import { calculateDoshaScoresV2, isV2Snapshot } from "@/lib/dosha-scoring";
+import { calculateDoshaScoresV2, isV2Snapshot } from "@/domain/ayurveda/dosha-scoring";
 import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/actions";
-import { DecryptedConsultation } from "@/lib/consultations";
-import { DecryptedPatientProfile } from "@/lib/patient-profile";
-import { StudyEntry, DecryptedStudyEntry } from "@/lib/study-catalog";
-import { ATTRIBUTE_CATALOG, AttributeDistributions } from "@/lib/attribute-catalog";
-import { PhysicalExamData, DEFAULT_PHYSICAL_EXAM } from "@/lib/physical-exam";
+import { DecryptedConsultation } from "@/queries/consultations";
+import { DecryptedPatientProfile } from "@/queries/patient-profile";
+import { StudyEntry, DecryptedStudyEntry } from "@/domain/ayurveda/study-catalog";
+import { ATTRIBUTE_CATALOG, AttributeDistributions } from "@/domain/ayurveda/attribute-catalog";
+import { PhysicalExamData, DEFAULT_PHYSICAL_EXAM } from "@/domain/ayurveda/physical-exam";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ProfileCompletionBadge } from "./ProfileCompletionBadge";
 

@@ -2,9 +2,9 @@ import { AppointmentInbox } from "@/components/portal/AppointmentInbox";
 import { PatientWorkspaceTabs } from "@/components/portal/PatientWorkspaceTabs";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { getConsultationByAppointmentId, getConsultationsByPatientId } from "@/lib/consultations";
-import { getPatientProfile, calculateProfileScore } from "@/lib/patient-profile";
-import { getStudyCatalogNames, getLatestStudiesForPatient } from "@/lib/study-catalog";
+import { getConsultationByAppointmentId, getConsultationsByPatientId } from "@/queries/consultations";
+import { getPatientProfile, calculateProfileScore } from "@/queries/patient-profile";
+import { getStudyCatalogNames, getLatestStudiesForPatient } from "@/domain/ayurveda/study-catalog";
 
 export const dynamic = 'force-dynamic';
 

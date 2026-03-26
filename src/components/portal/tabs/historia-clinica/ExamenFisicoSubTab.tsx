@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { Ruler, Heart, Leaf, Stethoscope } from "lucide-react";
-import { PhysicalExamData, calculateBMI } from "@/lib/physical-exam";
+import { PhysicalExamData, calculateBMI } from "@/domain/ayurveda/physical-exam";
 
 interface ExamenFisicoSubTabProps {
   physicalExam: PhysicalExamData;

@@ -1,6 +1,6 @@
 import { FileEdit } from "lucide-react";
 import { ConsultationHistory } from "../ConsultationHistory";
-import { DecryptedConsultation } from "@/lib/consultations";
+import { DecryptedConsultation } from "@/queries/consultations";
 
 interface NotasConsultaTabProps {
   notes: string;

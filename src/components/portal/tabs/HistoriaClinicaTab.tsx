@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { User, FileText, Stethoscope } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { DecryptedPatientProfile } from "@/lib/patient-profile";
-import { StudyEntry } from "@/lib/study-catalog";
-import { PhysicalExamData } from "@/lib/physical-exam";
+import { DecryptedPatientProfile } from "@/queries/patient-profile";
+import { StudyEntry } from "@/domain/ayurveda/study-catalog";
+import { PhysicalExamData } from "@/domain/ayurveda/physical-exam";
 import { DatosPerfilSubTab } from "./historia-clinica/DatosPerfilSubTab";
 import { EstudiosComplementariosSubTab } from "./historia-clinica/EstudiosComplementariosSubTab";
 import { ExamenFisicoSubTab } from "./historia-clinica/ExamenFisicoSubTab";

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { X, Plus } from "lucide-react";
-import { StudyEntry } from "@/lib/study-catalog";
+import { StudyEntry } from "@/domain/ayurveda/study-catalog";
 
 // ---------------------------------------------------------------------------
 // Helpers

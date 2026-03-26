@@ -2,12 +2,12 @@
 
 import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/encryption";
-import { calculateDoshaScoresV2, SymptomSnapshotV2 } from "@/lib/dosha-scoring";
+import { calculateDoshaScoresV2, SymptomSnapshotV2 } from "@/domain/ayurveda/dosha-scoring";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
-import { StudyPayloadEntry } from "@/lib/study-catalog";
-import { PhysicalExamPayload, PhysicalExamPayloadSchema } from "@/lib/physical-exam";
-import { toPhysicalExamDB } from "@/lib/physical-exam-server";
+import { StudyPayloadEntry } from "@/domain/ayurveda/study-catalog";
+import { PhysicalExamPayload, PhysicalExamPayloadSchema } from "@/domain/ayurveda/physical-exam";
+import { toPhysicalExamDB } from "@/domain/ayurveda/physical-exam-server";
 
 export interface SaveConsultationInput {
   patientId: string;
