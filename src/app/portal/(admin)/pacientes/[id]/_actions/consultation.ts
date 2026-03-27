@@ -5,9 +5,9 @@ import { encrypt } from "@/lib/encryption";
 import { calculateDoshaScoresV2, SymptomSnapshotV2 } from "@/domain/ayurveda/dosha-scoring";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
-import { StudyPayloadEntry } from "@/domain/ayurveda/study-catalog";
+import { StudyPayloadEntry } from "@/domain/ayurveda/study-types";
 import { PhysicalExamPayload, PhysicalExamPayloadSchema } from "@/domain/ayurveda/physical-exam";
-import { toPhysicalExamDB } from "@/domain/ayurveda/physical-exam-server";
+import { toPhysicalExamDB } from "@/lib/physical-exam-serialization";
 
 export interface SaveConsultationInput {
   patientId: string;

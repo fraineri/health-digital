@@ -9,7 +9,7 @@ import { calculateDoshaScoresV2, isV2Snapshot } from "@/domain/ayurveda/dosha-sc
 import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/_actions/consultation";
 import { DecryptedConsultation } from "@/queries/consultations";
 import { DecryptedPatientProfile } from "@/queries/patient-profile";
-import { StudyEntry, DecryptedStudyEntry } from "@/domain/ayurveda/study-catalog";
+import { StudyEntry, DecryptedStudyEntry } from "@/domain/ayurveda/study-types";
 import { ATTRIBUTE_CATALOG, AttributeDistributions } from "@/domain/ayurveda/attribute-catalog";
 import { PhysicalExamData, DEFAULT_PHYSICAL_EXAM } from "@/domain/ayurveda/physical-exam";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";

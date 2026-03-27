@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { getConsultationByAppointmentId, getConsultationsByPatientId } from "@/queries/consultations";
 import { getPatientProfile, calculateProfileScore } from "@/queries/patient-profile";
-import { getStudyCatalogNames, getLatestStudiesForPatient } from "@/domain/ayurveda/study-catalog";
+import { getStudyCatalogNames, getLatestStudiesForPatient } from "@/queries/studies";
 
 export const dynamic = 'force-dynamic';
 

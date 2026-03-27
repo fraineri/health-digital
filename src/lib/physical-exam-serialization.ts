@@ -4,7 +4,7 @@ import {
   PhysicalExamSnapshotDB,
   PhysicalExamPayload,
   DEFAULT_PHYSICAL_EXAM,
-} from "./physical-exam";
+} from "@/domain/ayurveda/physical-exam";
 
 /**
  * Encripta un string solo si tiene contenido real (no vacio).
