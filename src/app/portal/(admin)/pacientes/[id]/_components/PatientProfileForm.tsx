@@ -297,8 +297,8 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
 
       </div>
 
-      {/* Action Footer */}
-      <div className="p-8 border-t border-border/40 bg-slate-50 flex items-center justify-between">
+      {/* Action Footer — sticky dentro del scroll container */}
+      <div className="sticky bottom-0 z-10 p-8 border-t border-border/40 bg-slate-50/95 backdrop-blur-sm flex items-center justify-between">
          <span className="text-xs text-slate-500 font-medium">
            Actualizado: {patient.lastProfileUpdate ? new Date(patient.lastProfileUpdate).toLocaleDateString('es-AR') : 'Nunca'}
          </span>
