@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 // Validamos el input principal
-const PatientProfileSchema = z.object({
+export const PatientProfileSchema = z.object({
   patientId: z.string().uuid(),
   name: z.string().min(1, "El nombre es obligatorio"),
   email: z.string().email("Email inválido"),

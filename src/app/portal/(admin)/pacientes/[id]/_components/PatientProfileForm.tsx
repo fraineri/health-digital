@@ -1,72 +1,56 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { User, Activity, AlertCircle, Heart } from "lucide-react";
 import { ProfileFormSection } from "./ProfileFormSection";
 import { DecryptedPatientProfile } from "@/queries/patient-profile";
-import { savePatientProfile } from "@/app/portal/(admin)/pacientes/[id]/_actions/profile";
+import { savePatientProfile, PatientProfileSchema, type SavePatientProfileInput } from "@/app/portal/(admin)/pacientes/[id]/_actions/profile";
 
 interface PatientProfileFormProps {
   patient: DecryptedPatientProfile;
 }
 
 export function PatientProfileForm({ patient }: PatientProfileFormProps) {
-  const [isPending, startTransition] = useTransition();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Estados del formulario (pre-rellenados con props)
-  const [formData, setFormData] = useState({
-    name: patient.name,
-    email: patient.email,
-    phone: patient.phone || "",
-    dateOfBirth: patient.dateOfBirth ? patient.dateOfBirth.toISOString().split('T')[0] : "",
-    gender: patient.gender || "",
-    bloodType: patient.bloodType || "",
-    occupation: patient.occupation || "",
-    medicalHistory: patient.medicalHistory || "",
-    allergies: patient.allergies || "",
-    lifestyle: {
-      dietType: patient.lifestyle?.dietType || "",
-      exerciseFrequency: patient.lifestyle?.exerciseFrequency || "",
-      sleepQuality: patient.lifestyle?.sleepQuality || "",
-      stressLevel: patient.lifestyle?.stressLevel || "",
-      smokingStatus: patient.lifestyle?.smokingStatus || "",
-      alcoholConsumption: patient.lifestyle?.alcoholConsumption || "",
-      anxietyLevel: patient.lifestyle?.anxietyLevel || "",
+  const { register, handleSubmit, formState: { errors, isDirty, isSubmitting } } = useForm<SavePatientProfileInput>({
+    resolver: zodResolver(PatientProfileSchema),
+    defaultValues: {
+      patientId: patient.id,
+      name: patient.name,
+      email: patient.email,
+      phone: patient.phone || '',
+      dateOfBirth: patient.dateOfBirth ? patient.dateOfBirth.toISOString().split('T')[0] : '',
+      gender: patient.gender || '',
+      bloodType: patient.bloodType || '',
+      occupation: patient.occupation || '',
+      medicalHistory: patient.medicalHistory || '',
+      allergies: patient.allergies || '',
+      lifestyle: {
+        dietType: patient.lifestyle?.dietType || '',
+        exerciseFrequency: patient.lifestyle?.exerciseFrequency || '',
+        sleepQuality: patient.lifestyle?.sleepQuality || '',
+        stressLevel: patient.lifestyle?.stressLevel || '',
+        smokingStatus: patient.lifestyle?.smokingStatus || '',
+        alcoholConsumption: patient.lifestyle?.alcoholConsumption || '',
+        anxietyLevel: patient.lifestyle?.anxietyLevel || '',
+      }
     }
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    if (name.startsWith('lifestyle.')) {
-      const lifestyleField = name.split('.')[1];
-      setFormData(prev => ({
-        ...prev,
-        lifestyle: { ...prev.lifestyle, [lifestyleField]: value }
-      }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
-  };
-
-  const handleSave = async () => {
+  const onSubmit = async (data: SavePatientProfileInput) => {
     setErrorMsg(null);
     setIsSuccess(false);
-    
-    startTransition(async () => {
-      const result = await savePatientProfile({
-        patientId: patient.id,
-        ...formData
-      });
-
-      if (result.success) {
-        setIsSuccess(true);
-        setTimeout(() => setIsSuccess(false), 3000);
-      } else {
-        setErrorMsg(result.error || "Error al guardar el perfil");
-      }
-    });
+    const result = await savePatientProfile(data);
+    if (result.success) {
+      setIsSuccess(true);
+      setTimeout(() => setIsSuccess(false), 3000);
+    } else {
+      setErrorMsg(result.error || 'Error al guardar el perfil');
+    }
   };
 
   return (
@@ -86,16 +70,18 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
       </div>
 
       {/* Form Content */}
+      <form onSubmit={handleSubmit(onSubmit)}>
       <div className="p-8 space-y-10">
         <ProfileFormSection title="Datos Personales" icon={<User className="w-4 h-4" />}>
            <div className="grid grid-cols-2 gap-6">
-             
+
              <div className="space-y-1.5 flex flex-col">
                <label className="text-xs font-semibold text-slate-500">Nombre Completo *</label>
-               <input 
-                 name="name" value={formData.name} onChange={handleChange} 
-                 className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm" 
+               <input
+                 {...register('name')}
+                 className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm"
                />
+               {errors.name && <span className="text-xs text-red-500">{errors.name.message}</span>}
                {patient.profileSource === 'CAL_COM' && (
                  <span className="text-[10px] text-slate-400">Importado desde Cal.com</span>
                )}
@@ -103,32 +89,33 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
 
              <div className="space-y-1.5 flex flex-col">
                <label className="text-xs font-semibold text-slate-500">Email *</label>
-               <input 
-                 name="email" value={formData.email} onChange={handleChange} type="email"
-                 className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm" 
+               <input
+                 {...register('email')} type="email"
+                 className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm"
                />
+               {errors.email && <span className="text-xs text-red-500">{errors.email.message}</span>}
              </div>
 
              <div className="space-y-1.5 flex flex-col">
                <label className="text-xs font-semibold text-slate-500">Teléfono</label>
-               <input 
-                 name="phone" value={formData.phone} onChange={handleChange} 
-                 className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm" 
+               <input
+                 {...register('phone')}
+                 className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm"
                />
              </div>
 
              <div className="space-y-1.5 flex flex-col">
                <label className="text-xs font-semibold text-slate-500">Fecha de Nacimiento</label>
-               <input 
-                 name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} type="date"
-                 className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm" 
+               <input
+                 {...register('dateOfBirth')} type="date"
+                 className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm"
                />
              </div>
 
              <div className="space-y-1.5 flex flex-col">
                <label className="text-xs font-semibold text-slate-500">Género</label>
-               <select 
-                 name="gender" value={formData.gender} onChange={handleChange}
+               <select
+                 {...register('gender')}
                  className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                >
                  <option value="">Seleccionar...</option>
@@ -141,8 +128,8 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
 
              <div className="space-y-1.5 flex flex-col">
                <label className="text-xs font-semibold text-slate-500">Grupo Sanguíneo</label>
-               <select 
-                 name="bloodType" value={formData.bloodType} onChange={handleChange}
+               <select
+                 {...register('bloodType')}
                  className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                >
                  <option value="">Desconocido</option>
@@ -164,17 +151,17 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
           <div className="space-y-6">
              <div className="space-y-1.5 flex flex-col">
                <label className="text-xs font-semibold text-slate-500">Antecedentes, Cirugías, Enfermedades Crónicas</label>
-               <textarea 
-                 name="medicalHistory" value={formData.medicalHistory} onChange={handleChange} rows={4}
-                 className="w-full bg-white border border-border/60 rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-y shadow-sm" 
+               <textarea
+                 {...register('medicalHistory')} rows={4}
+                 className="w-full bg-white border border-border/60 rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-y shadow-sm"
                  placeholder="Ej: Apendicectomía (2015), Hipotiroidismo controlado..."
                />
              </div>
              <div className="space-y-1.5 flex flex-col">
                <label className="text-xs font-semibold text-slate-500">Alergias e Intolerancias</label>
-               <textarea 
-                 name="allergies" value={formData.allergies} onChange={handleChange} rows={2}
-                 className="w-full bg-white border border-border/60 rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-y text-red-600/90 placeholder:text-slate-400 shadow-sm" 
+               <textarea
+                 {...register('allergies')} rows={2}
+                 className="w-full bg-white border border-border/60 rounded-xl px-4 py-3 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-y text-red-600/90 placeholder:text-slate-400 shadow-sm"
                  placeholder="Ej: Penicilina, Intolerancia a la lactosa leve..."
                />
              </div>
@@ -183,11 +170,11 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
 
         <ProfileFormSection title="Estilo de Vida y Hábitos" icon={<Heart className="w-4 h-4" />}>
            <div className="grid grid-cols-2 gap-6">
-               
+
                <div className="space-y-1.5 flex flex-col">
                  <label className="text-xs font-semibold text-slate-500">Alimentación</label>
-                 <select 
-                   name="lifestyle.dietType" value={formData.lifestyle.dietType} onChange={handleChange}
+                 <select
+                   {...register('lifestyle.dietType')}
                    className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                  >
                    <option value="">Seleccionar...</option>
@@ -201,8 +188,8 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
 
                <div className="space-y-1.5 flex flex-col">
                  <label className="text-xs font-semibold text-slate-500">Actividad Física</label>
-                 <select 
-                   name="lifestyle.exerciseFrequency" value={formData.lifestyle.exerciseFrequency} onChange={handleChange}
+                 <select
+                   {...register('lifestyle.exerciseFrequency')}
                    className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                  >
                    <option value="">Seleccionar...</option>
@@ -215,8 +202,8 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
 
                <div className="space-y-1.5 flex flex-col">
                  <label className="text-xs font-semibold text-slate-500">Calidad de Sueño</label>
-                 <select 
-                   name="lifestyle.sleepQuality" value={formData.lifestyle.sleepQuality} onChange={handleChange}
+                 <select
+                   {...register('lifestyle.sleepQuality')}
                    className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                  >
                    <option value="">Seleccionar...</option>
@@ -229,8 +216,8 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
 
                <div className="space-y-1.5 flex flex-col">
                  <label className="text-xs font-semibold text-slate-500">Nivel de Estrés</label>
-                 <select 
-                   name="lifestyle.stressLevel" value={formData.lifestyle.stressLevel} onChange={handleChange}
+                 <select
+                   {...register('lifestyle.stressLevel')}
                    className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                  >
                    <option value="">Seleccionar...</option>
@@ -243,8 +230,8 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
 
                <div className="space-y-1.5 flex flex-col">
                  <label className="text-xs font-semibold text-slate-500">Nivel de Ansiedad</label>
-                 <select 
-                   name="lifestyle.anxietyLevel" value={formData.lifestyle.anxietyLevel} onChange={handleChange}
+                 <select
+                   {...register('lifestyle.anxietyLevel')}
                    className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                  >
                    <option value="">Seleccionar...</option>
@@ -257,8 +244,8 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
 
                <div className="space-y-1.5 flex flex-col">
                  <label className="text-xs font-semibold text-slate-500">Consumo de Tabaco</label>
-                 <select 
-                   name="lifestyle.smokingStatus" value={formData.lifestyle.smokingStatus} onChange={handleChange}
+                 <select
+                   {...register('lifestyle.smokingStatus')}
                    className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                  >
                    <option value="">Seleccionar...</option>
@@ -272,8 +259,8 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
 
                <div className="space-y-1.5 flex flex-col">
                  <label className="text-xs font-semibold text-slate-500">Consumo de Alcohol</label>
-                 <select 
-                   name="lifestyle.alcoholConsumption" value={formData.lifestyle.alcoholConsumption} onChange={handleChange}
+                 <select
+                   {...register('lifestyle.alcoholConsumption')}
                    className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                  >
                    <option value="">Seleccionar...</option>
@@ -296,15 +283,16 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
          </span>
          <div className="flex items-center gap-4">
            {isSuccess && <span className="text-sm font-bold text-primary">¡Guardado con éxito!</span>}
-           <button 
-             onClick={handleSave}
-             disabled={isPending}
+           <button
+             type="submit"
+             disabled={isSubmitting || !isDirty}
              className="bg-primary hover:bg-[#7a8c72] disabled:bg-primary/50 text-white px-8 h-12 rounded-full font-bold shadow-sm transition-all flex items-center gap-2"
            >
-             {isPending ? "Guardando..." : "Guardar Perfil"}
+             {isSubmitting ? "Guardando..." : "Guardar Perfil"}
            </button>
          </div>
       </div>
+      </form>
     </div>
   );
 }
