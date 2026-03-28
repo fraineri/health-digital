@@ -1,5 +1,3 @@
-import styles from './FAQ.module.css';
-
 export default function FAQ() {
   const faqs = [
     {
@@ -25,30 +23,30 @@ export default function FAQ() {
   ];
 
   return (
-    <section className={styles.faqSection} id="faq">
-      <div className={`container ${styles.container}`}>
-        
-        <div className={styles.header}>
-          <h2 className={styles.title}>Preguntas Frecuentes</h2>
-          <p className={styles.subtitle}>Resolvemos tus dudas sobre nuestra metodología de atención.</p>
+    <section className="w-full py-24 bg-surface max-md:py-16" id="faq">
+      <div className="container flex flex-col items-center max-w-[800px]">
+
+        <div className="text-center mb-16">
+          <h2 className="text-[2.25rem] text-foreground mb-2 max-md:text-[2rem]">Preguntas Frecuentes</h2>
+          <p className="text-[#6b7280] text-lg">Resolvemos tus dudas sobre nuestra metodología de atención.</p>
         </div>
 
-        <div className={styles.accordionContainer}>
+        <div className="w-full flex flex-col gap-4">
           {faqs.map((faq, index) => (
-            <details key={index} className={styles.details} name="faq-accordion">
-              <summary className={styles.summary}>
+            <details key={index} className="group bg-transparent border-b border-border transition-all" name="faq-accordion">
+              <summary className="list-none [&::-webkit-details-marker]:hidden py-6 cursor-pointer flex justify-between items-center text-lg font-semibold text-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4 group-open:text-primary max-md:text-base max-md:py-5">
                 {faq.question}
-                <span className={styles.iconWrapper}>
-                  <svg className={styles.iconPlus} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <span className="flex items-center justify-center w-6 h-6 text-[#9ca3af] transition-colors group-hover:text-primary">
+                  <svg className="block group-open:hidden transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                   </svg>
-                  <svg className={styles.iconMinus} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="hidden group-open:block transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                   </svg>
                 </span>
               </summary>
-              <div className={styles.content}>
+              <div className="pb-8 text-[#4b5563] leading-[1.7] text-base animate-slide-down">
                 <p>{faq.answer}</p>
               </div>
             </details>

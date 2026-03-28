@@ -1,5 +1,3 @@
-import styles from './ServicePath.module.css';
-
 export default function ServicePath() {
   const steps = [
     {
@@ -42,22 +40,25 @@ export default function ServicePath() {
   ];
 
   return (
-    <section className={styles.serviceSection} id="como-funciona">
-      <div className={`container ${styles.container}`}>
-        
-        <div className={styles.header}>
-          <h2 className={styles.title}>Tu camino al bienestar</h2>
-          <div className={styles.divider}></div>
+    <section className="w-full py-24 bg-background md:py-16" id="como-funciona">
+      <div className="container flex flex-col items-center">
+
+        <div className="text-center mb-16">
+          <h2 className="text-[2.25rem] text-foreground mb-4">Tu camino al bienestar</h2>
+          <div className="w-[60px] h-0.5 bg-primary mx-auto"></div>
         </div>
 
-        <div className={styles.grid}>
+        <div className="grid grid-cols-3 gap-8 w-full lg:gap-6 md:grid-cols-1 md:gap-6">
           {steps.map((step) => (
-            <div key={step.id} className={styles.card}>
-              <div className={styles.iconWrapper}>
+            <div
+              key={step.id}
+              className="group bg-surface px-8 py-12 lg:px-6 lg:py-8 rounded-2xl shadow-landing-sm flex flex-col transition-all duration-300 ease-in-out hover:-translate-y-[5px] hover:shadow-landing-md"
+            >
+              <div className="w-14 h-14 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-8 transition-all duration-300 ease-in-out group-hover:bg-primary group-hover:text-white group-hover:scale-105">
                 {step.icon}
               </div>
-              <div className={styles.stepNumber}>{step.id}. {step.title}</div>
-              <p className={styles.description}>{step.description}</p>
+              <div className="font-sans font-bold text-lg text-foreground mb-4">{step.id}. {step.title}</div>
+              <p className="text-gray-500 leading-relaxed text-[0.95rem]">{step.description}</p>
             </div>
           ))}
         </div>

@@ -1,5 +1,3 @@
-import styles from './Specialties.module.css';
-
 export default function Specialties() {
   const specialties = [
     {
@@ -50,25 +48,30 @@ export default function Specialties() {
   ];
 
   return (
-    <section className={styles.specialtiesSection} id="especialidades">
-      <div className={`container ${styles.container}`}>
-        
-        <div className={styles.header}>
-          <span className={styles.badge}>ÁREAS DE ENFOQUE</span>
-          <h2 className={styles.title}>Especialidades Clínicas</h2>
-          <p className={styles.subtitle}>
+    <section className="py-24 bg-background" id="especialidades">
+      <div className="container flex flex-col gap-16">
+
+        <div className="text-center max-w-[600px] mx-auto flex flex-col items-center gap-4">
+          <span className="inline-block py-1.5 px-4 bg-primary/10 text-primary-hover rounded-full text-xs font-semibold tracking-wide uppercase">
+            ÁREAS DE ENFOQUE
+          </span>
+          <h2 className="text-[2.4rem] text-foreground">Especialidades Clínicas</h2>
+          <p className="text-lg text-gray-600 leading-relaxed">
             Tratamientos diseñados para devolverle al cuerpo su capacidad innata de regularse.
           </p>
         </div>
 
-        <div className={styles.grid}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {specialties.map((item) => (
-            <div key={item.id} className={styles.card}>
-              <div className={styles.iconWrapper}>
+            <div
+              key={item.id}
+              className="group relative overflow-hidden bg-surface border border-border rounded-2xl p-10 px-8 flex flex-col gap-5 transition-all duration-300 hover:-translate-y-2 hover:shadow-landing-md hover:border-transparent before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-1 before:bg-primary before:scale-x-0 before:origin-left before:transition-transform before:duration-300 hover:before:scale-x-100"
+            >
+              <div className="w-14 h-14 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-all duration-300 group-hover:bg-primary group-hover:text-white">
                 {item.icon}
               </div>
-              <h3 className={styles.cardTitle}>{item.title}</h3>
-              <p className={styles.cardDescription}>{item.description}</p>
+              <h3 className="font-sans text-xl font-semibold text-foreground mt-2">{item.title}</h3>
+              <p className="text-base text-gray-500 leading-relaxed">{item.description}</p>
             </div>
           ))}
         </div>
