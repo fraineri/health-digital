@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-import { PhysicalExamPayloadSchema } from "./physical-exam";
+import { PhysicalExamPayloadSchema, PhysicalExamData } from "./physical-exam";
+import { AttributeDistributions } from "./attribute-catalog";
+import { StudyEntry } from "./study-types";
 
 // ---------------------------------------------------------------------------
 // ConsultationSchema — single source of truth for workspace form validation.
@@ -58,3 +60,29 @@ export const ConsultationSchema = z.object({
 });
 
 export type ConsultationFormValues = z.infer<typeof ConsultationSchema>;
+
+// ---------------------------------------------------------------------------
+// WorkspaceFormValues — internal form state for PatientWorkspaceTabs.
+// Superset of ConsultationFormValues: includes UI-only fields (StudyEntry
+// metadata, nullable dosha overrides, PhysicalExamData always present).
+// Transformed to SaveConsultationInput at submit time.
+// ---------------------------------------------------------------------------
+
+export interface WorkspaceFormValues {
+  patientId: string;
+  appointmentId?: string;
+  symptomSnapshot: { version: 2; distributions: AttributeDistributions };
+  vataFinal: number | null;
+  pittaFinal: number | null;
+  kaphaFinal: number | null;
+  nutritionPlan: string | null;
+  phytotherapy: string | null;
+  dailyRoutine: string | null;
+  agniType: "SAMA" | "VISHAMA" | "TIKSHNA" | "MANDA" | null;
+  amaLevel: number;
+  notes: string;
+  anamnesis: string;
+  diagnosis: string;
+  studies: StudyEntry[];
+  physicalExam: PhysicalExamData;
+}

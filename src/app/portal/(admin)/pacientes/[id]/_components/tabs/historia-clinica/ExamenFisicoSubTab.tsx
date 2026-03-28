@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo } from "react";
+import { useFormContext } from "react-hook-form";
 import { Ruler, Heart, Leaf, Stethoscope } from "lucide-react";
 import { PhysicalExamData, calculateBMI } from "@/domain/ayurveda/physical-exam";
+import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
 interface ExamenFisicoSubTabProps {
-  physicalExam: PhysicalExamData;
-  onPhysicalExamChange: (exam: PhysicalExamData) => void;
   previousExam?: PhysicalExamData | null;
 }
 
@@ -81,9 +81,12 @@ function AutoResizeTextarea({ label, value, onChange, placeholder, minHeight = "
 
 // ── Componente principal ─────────────────────────────────────────────────────
 
-export function ExamenFisicoSubTab({ physicalExam, onPhysicalExamChange, previousExam }: ExamenFisicoSubTabProps) {
+export function ExamenFisicoSubTab({ previousExam }: ExamenFisicoSubTabProps) {
+  const { watch, setValue } = useFormContext<WorkspaceFormValues>();
+  const physicalExam = watch("physicalExam");
+
   const updateField = <K extends keyof PhysicalExamData>(field: K, value: PhysicalExamData[K]) => {
-    onPhysicalExamChange({ ...physicalExam, [field]: value });
+    setValue("physicalExam", { ...physicalExam, [field]: value }, { shouldDirty: true });
   };
 
   const bmi = useMemo(

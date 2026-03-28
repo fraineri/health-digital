@@ -1,32 +1,27 @@
+"use client";
+
+import { useMemo } from "react";
+import { useFormContext } from "react-hook-form";
 import { Wind, Flame, Droplets } from "lucide-react";
 import { DistributionMatrix } from "../DistributionMatrix";
 import { DoshaSlider } from "../DoshaSlider";
-import { DoshaScores } from "@/domain/ayurveda/dosha-scoring";
-import { AttributeDistributions } from "@/domain/ayurveda/attribute-catalog";
+import { calculateDoshaScoresV2 } from "@/domain/ayurveda/dosha-scoring";
+import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
-interface EvaluacionDiagnosticoTabProps {
-  distributions: AttributeDistributions;
-  setDistributions: (distributions: AttributeDistributions) => void;
-  suggestedScores: DoshaScores;
-  displayVata: number;
-  displayPitta: number;
-  displayKapha: number;
-  setVataFinal: (val: number | null) => void;
-  setPittaFinal: (val: number | null) => void;
-  setKaphaFinal: (val: number | null) => void;
-}
+export function EvaluacionDiagnosticoTab() {
+  const { watch, setValue } = useFormContext<WorkspaceFormValues>();
 
-export function EvaluacionDiagnosticoTab({
-  distributions,
-  setDistributions,
-  suggestedScores,
-  displayVata,
-  displayPitta,
-  displayKapha,
-  setVataFinal,
-  setPittaFinal,
-  setKaphaFinal,
-}: EvaluacionDiagnosticoTabProps) {
+  const distributions = watch("symptomSnapshot.distributions");
+  const vataFinal = watch("vataFinal");
+  const pittaFinal = watch("pittaFinal");
+  const kaphaFinal = watch("kaphaFinal");
+
+  const suggestedScores = useMemo(() => calculateDoshaScoresV2(distributions), [distributions]);
+
+  const displayVata = vataFinal !== null ? vataFinal : suggestedScores.vata;
+  const displayPitta = pittaFinal !== null ? pittaFinal : suggestedScores.pitta;
+  const displayKapha = kaphaFinal !== null ? kaphaFinal : suggestedScores.kapha;
+
   return (
     <div className="h-full overflow-y-auto">
       <div className="max-w-5xl mx-auto px-10 pt-10 pb-40">
@@ -54,8 +49,8 @@ export function EvaluacionDiagnosticoTab({
               bgClass="bg-vata"
               suggestedLevel={suggestedScores.vata}
               level={displayVata}
-              onChange={setVataFinal}
-              onReset={() => setVataFinal(null)}
+              onChange={(val) => setValue("vataFinal", val, { shouldDirty: true })}
+              onReset={() => setValue("vataFinal", null, { shouldDirty: true })}
               active={displayVata > displayPitta && displayVata > displayKapha}
             />
             <DoshaSlider
@@ -65,8 +60,8 @@ export function EvaluacionDiagnosticoTab({
               bgClass="bg-pitta"
               suggestedLevel={suggestedScores.pitta}
               level={displayPitta}
-              onChange={setPittaFinal}
-              onReset={() => setPittaFinal(null)}
+              onChange={(val) => setValue("pittaFinal", val, { shouldDirty: true })}
+              onReset={() => setValue("pittaFinal", null, { shouldDirty: true })}
               active={displayPitta > displayVata && displayPitta > displayKapha}
             />
             <DoshaSlider
@@ -76,8 +71,8 @@ export function EvaluacionDiagnosticoTab({
               bgClass="bg-kapha"
               suggestedLevel={suggestedScores.kapha}
               level={displayKapha}
-              onChange={setKaphaFinal}
-              onReset={() => setKaphaFinal(null)}
+              onChange={(val) => setValue("kaphaFinal", val, { shouldDirty: true })}
+              onReset={() => setValue("kaphaFinal", null, { shouldDirty: true })}
               active={displayKapha > displayVata && displayKapha > displayPitta}
             />
           </div>
@@ -85,10 +80,7 @@ export function EvaluacionDiagnosticoTab({
 
         {/* Matrix Content */}
         <div className="bg-white rounded-b-3xl border border-t-0 border-border/40 shadow-sm p-8">
-          <DistributionMatrix
-            distributions={distributions}
-            onChange={setDistributions}
-          />
+          <DistributionMatrix />
         </div>
 
       </div>

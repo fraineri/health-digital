@@ -1,13 +1,8 @@
 "use client";
 
+import { useFormContext } from "react-hook-form";
 import { ChevronDown } from "lucide-react";
-
-interface TreatmentPlanFormProps {
-  nutritionPlan: string | null;
-  phytotherapy: string | null;
-  dailyRoutine: string | null;
-  onChange: (field: "nutritionPlan" | "phytotherapy" | "dailyRoutine", value: string) => void;
-}
+import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
 // Opciones hardcodeadas (MVP) - A iterar en futuros sprints
 const NUTRITION_OPTIONS = [
@@ -42,20 +37,21 @@ const ROUTINE_OPTIONS = [
   "Higiene del sueño: Desconectar pantallas 21h"
 ];
 
-export function TreatmentPlanForm({
-  nutritionPlan,
-  phytotherapy,
-  dailyRoutine,
-  onChange,
-}: TreatmentPlanFormProps) {
+export function TreatmentPlanForm() {
+  const { watch, setValue } = useFormContext<WorkspaceFormValues>();
+
+  const nutritionPlan = watch("nutritionPlan");
+  const phytotherapy = watch("phytotherapy");
+  const dailyRoutine = watch("dailyRoutine");
+
   return (
     <div className="space-y-8">
       <div className="space-y-3">
         <label className="text-sm font-semibold text-slate-700">Enfoque Nutricional</label>
         <div className="relative">
-          <select 
+          <select
             value={nutritionPlan || "No especificado"}
-            onChange={(e) => onChange("nutritionPlan", e.target.value)}
+            onChange={(e) => setValue("nutritionPlan", e.target.value, { shouldDirty: true })}
             className="w-full h-12 bg-white border border-border/60 rounded-xl px-4 appearance-none text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm cursor-pointer"
           >
             {NUTRITION_OPTIONS.map(opt => (
@@ -69,9 +65,9 @@ export function TreatmentPlanForm({
       <div className="space-y-3">
         <label className="text-sm font-semibold text-slate-700">Fitoterapia & Suplementos</label>
         <div className="relative">
-          <select 
+          <select
             value={phytotherapy || "No especificado"}
-            onChange={(e) => onChange("phytotherapy", e.target.value)}
+            onChange={(e) => setValue("phytotherapy", e.target.value, { shouldDirty: true })}
             className="w-full h-12 bg-white border border-border/60 rounded-xl px-4 appearance-none text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm cursor-pointer"
           >
             {PHYTO_OPTIONS.map(opt => (
@@ -85,9 +81,9 @@ export function TreatmentPlanForm({
       <div className="space-y-3">
         <label className="text-sm font-semibold text-slate-700">Rutina Sugerida (Dinacharya)</label>
         <div className="relative">
-          <select 
+          <select
             value={dailyRoutine || "No especificado"}
-            onChange={(e) => onChange("dailyRoutine", e.target.value)}
+            onChange={(e) => setValue("dailyRoutine", e.target.value, { shouldDirty: true })}
             className="w-full h-12 bg-white border border-border/60 rounded-xl px-4 appearance-none text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm cursor-pointer"
           >
             {ROUTINE_OPTIONS.map(opt => (

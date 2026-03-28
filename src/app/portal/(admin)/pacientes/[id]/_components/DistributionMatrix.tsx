@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useMemo, useCallback } from "react";
+import { useFormContext } from "react-hook-form";
 import {
   ATTRIBUTE_CATALOG,
-  AttributeDistributions,
   DoshaDistribution,
   DoshaKey,
   PrakrutiAttribute,
   POINTS_PER_ROW,
 } from "@/domain/ayurveda/attribute-catalog";
+import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
 // ─── Dosha Configuration ─────────────────────────────────────────────────────
 const DOSHA_CONFIG = {
@@ -163,15 +164,11 @@ const AttributeCard = React.memo(function AttributeCard({
 });
 
 // ─── DistributionMatrix (Main Export) ────────────────────────────────────────
-interface DistributionMatrixProps {
-  distributions: AttributeDistributions;
-  onChange: (distributions: AttributeDistributions) => void;
-}
 
-export function DistributionMatrix({
-  distributions,
-  onChange,
-}: DistributionMatrixProps) {
+export function DistributionMatrix() {
+  const { watch, setValue } = useFormContext<WorkspaceFormValues>();
+  const distributions = watch("symptomSnapshot.distributions");
+
   const groupedAttributes = useMemo(() => {
     return ATTRIBUTE_CATALOG.reduce((acc, attr) => {
       if (!acc[attr.category]) acc[attr.category] = [];
@@ -195,9 +192,13 @@ export function DistributionMatrix({
       const rowTotal = current.vata + current.pitta + current.kapha + delta;
       if (rowTotal > POINTS_PER_ROW) return;
       const updated = { ...current, [dosha]: newValue };
-      onChange({ ...distributions, [attributeId]: updated });
+      setValue(
+        "symptomSnapshot.distributions",
+        { ...distributions, [attributeId]: updated },
+        { shouldDirty: true }
+      );
     },
-    [distributions, onChange]
+    [distributions, setValue]
   );
 
   return (

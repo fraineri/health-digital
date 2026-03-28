@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useFormContext, useFieldArray } from "react-hook-form";
 import { X, Plus } from "lucide-react";
 import { StudyEntry } from "@/domain/ayurveda/study-types";
+import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -166,12 +168,13 @@ function StudyCombobox({ value, catalog, onChange, autoFocus }: StudyComboboxPro
 interface StudyRowProps {
   entry: StudyEntry;
   catalog: string[];
-  onChange: (updated: StudyEntry) => void;
+  onStudyNameChange: (name: string) => void;
+  onValueChange: (value: string) => void;
   onRemove: () => void;
   autoFocusName?: boolean;
 }
 
-function StudyRow({ entry, catalog, onChange, onRemove, autoFocusName }: StudyRowProps) {
+function StudyRow({ entry, catalog, onStudyNameChange, onValueChange, onRemove, autoFocusName }: StudyRowProps) {
   return (
     <div className="py-4">
       <div className="grid grid-cols-[1fr_1fr_auto] gap-4 items-center">
@@ -179,7 +182,7 @@ function StudyRow({ entry, catalog, onChange, onRemove, autoFocusName }: StudyRo
         <StudyCombobox
           value={entry.studyName}
           catalog={catalog}
-          onChange={(name) => onChange({ ...entry, studyName: name })}
+          onChange={onStudyNameChange}
           autoFocus={autoFocusName}
         />
 
@@ -189,7 +192,7 @@ function StudyRow({ entry, catalog, onChange, onRemove, autoFocusName }: StudyRo
           value={entry.value}
           placeholder="Resultado…"
           className="bg-stone-50/50 border border-border/40 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary/40 outline-none w-full transition-colors"
-          onChange={(e) => onChange({ ...entry, value: e.target.value })}
+          onChange={(e) => onValueChange(e.target.value)}
         />
 
         {/* Delete Button */}
@@ -222,34 +225,23 @@ function StudyRow({ entry, catalog, onChange, onRemove, autoFocusName }: StudyRo
 // ---------------------------------------------------------------------------
 
 interface EstudiosComplementariosSubTabProps {
-  studies: StudyEntry[];
-  onStudiesChange: (studies: StudyEntry[]) => void;
   studyCatalog: string[];
 }
 
 export function EstudiosComplementariosSubTab({
-  studies,
-  onStudiesChange,
   studyCatalog,
 }: EstudiosComplementariosSubTabProps) {
+  const { control, setValue, watch } = useFormContext<WorkspaceFormValues>();
+  const { fields, append, remove } = useFieldArray({ control, name: "studies" });
+  const studies = watch("studies");
+
   const handleAddStudy = () => {
-    onStudiesChange([
-      ...studies,
-      {
-        id: crypto.randomUUID(),
-        studyName: "",
-        value: "",
-        isNew: true,
-      },
-    ]);
-  };
-
-  const handleUpdateStudy = (id: string, updated: StudyEntry) => {
-    onStudiesChange(studies.map((s) => (s.id === id ? updated : s)));
-  };
-
-  const handleRemoveStudy = (id: string) => {
-    onStudiesChange(studies.filter((s) => s.id !== id));
+    append({
+      id: crypto.randomUUID(),
+      studyName: "",
+      value: "",
+      isNew: true,
+    });
   };
 
   return (
@@ -275,20 +267,25 @@ export function EstudiosComplementariosSubTab({
 
           {/* Rows */}
           <div className="divide-y divide-border/20">
-            {studies.map((entry, index) => (
+            {fields.map((field, index) => (
               <StudyRow
-                key={entry.id}
-                entry={entry}
+                key={field.id}
+                entry={studies[index]}
                 catalog={studyCatalog}
-                onChange={(updated) => handleUpdateStudy(entry.id, updated)}
-                onRemove={() => handleRemoveStudy(entry.id)}
-                autoFocusName={entry.isNew && index === studies.length - 1}
+                onStudyNameChange={(name) =>
+                  setValue(`studies.${index}.studyName`, name, { shouldDirty: true })
+                }
+                onValueChange={(value) =>
+                  setValue(`studies.${index}.value`, value, { shouldDirty: true })
+                }
+                onRemove={() => remove(index)}
+                autoFocusName={studies[index]?.isNew && index === fields.length - 1}
               />
             ))}
           </div>
 
           {/* Empty State */}
-          {studies.length === 0 && (
+          {fields.length === 0 && (
             <div className="text-center py-10 text-slate-300">
               <p className="text-sm font-medium">
                 No hay estudios registrados para este paciente.
