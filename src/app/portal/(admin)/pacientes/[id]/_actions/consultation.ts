@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/encryption";
 import { calculateDoshaScoresV2, SymptomSnapshotV2 } from "@/domain/ayurveda/dosha-scoring";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
+import { Prisma, AgniType, AmaLevel } from "@prisma/client";
 import { StudyPayloadEntry } from "@/domain/ayurveda/study-types";
 import { PhysicalExamPayload, PhysicalExamPayloadSchema } from "@/domain/ayurveda/physical-exam";
 import { toPhysicalExamDB } from "@/lib/physical-exam-serialization";
@@ -19,8 +19,8 @@ export interface SaveConsultationInput {
   nutritionPlan: string | null;
   phytotherapy: string | null;
   dailyRoutine: string | null;
-  agniType: string | null;
-  amaLevel: number | null;
+  agniType: AgniType | null;
+  amaLevel: AmaLevel | null;
   notes: string | null;          // Plain text
   anamnesis: string | null;      // Plain text
   diagnosis: string | null;      // Plain text

@@ -1,9 +1,8 @@
 "use client";
 
+import type { AgniType } from "@prisma/client";
 import { Scale, Wind, Flame, Droplets, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-export type AgniType = "SAMA" | "VISHAMA" | "TIKSHNA" | "MANDA";
 
 interface AgniOption {
   id: AgniType;

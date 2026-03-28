@@ -23,6 +23,13 @@ model Patient {
   encryptedMedicalHistory String?
   encryptedAllergies      String?
   lifestyle               Json?
+
+  // — Datos de Contacto Cifrados (PII) —
+  // Los campos phone y address se mantienen para Cal.com webhook backward-compat.
+  // El portal escribe a estos campos cifrados; la query de lectura los prioriza.
+  encryptedPhone          String?
+  encryptedAddress        String?
+  encryptedDni            String?
   
   // — Meta Data de Perfil —
   profileSource           String?        // Ej. "CAL_COM" o "PORTAL"
@@ -80,6 +87,20 @@ enum BookingStatus {
   DONE
 }
 
+enum AgniType {
+  SAMA
+  VISHAMA
+  TIKSHNA
+  MANDA
+}
+
+enum AmaLevel {
+  NONE    // Era Int 0 — Sin Ama
+  LOW     // Era Int 1 — Leve
+  MEDIUM  // Era Int 2 — Moderada
+  HIGH    // Era Int 3 — Severa
+}
+
 model User {
   id        String   @id @default(uuid())
   name      String
@@ -115,8 +136,8 @@ model Consultation {
   encryptedDiagnosis String?
 
   // — Síntesis Clínica Integrativa —
-  agniType           String?      // Enum lógico: "SAMA" | "VISHAMA" | "TIKSHNA" | "MANDA"
-  amaLevel           Int?         // 0-3 (intensidad de toxinas)
+  agniType           AgniType?
+  amaLevel           AmaLevel?
 
   // — Symptom Scores (snapshot del checklist) —
   symptomSnapshot    Json?        // Snapshot de los síntomas marcados

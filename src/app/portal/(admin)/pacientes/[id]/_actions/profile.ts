@@ -22,6 +22,11 @@ export async function savePatientProfile(
     // 2. Encriptar campos de privacidad médica
     const encryptedMedicalHistory = data.medicalHistory ? encrypt(data.medicalHistory) : null;
     const encryptedAllergies = data.allergies ? encrypt(data.allergies) : null;
+
+    // Encriptar datos de contacto directo (PII)
+    const encryptedPhone   = data.phone   ? encrypt(data.phone)   : null;
+    const encryptedAddress = data.address ? encrypt(data.address) : null;
+    const encryptedDni     = data.dni     ? encrypt(data.dni)     : null;
     
     // Parse Date Si viene como string
     let dateOfBirth: Date | null = null;
@@ -40,12 +45,15 @@ export async function savePatientProfile(
       update: {
         name: data.name,
         email: data.email, // Aunque sea unique, actualizamos si cambiase
-        phone: data.phone,
+        // phone y address en plain text NO se escriben desde el portal.
+        // Cal.com sigue gestionando phone via webhook.
+        encryptedPhone,
+        encryptedAddress,
+        encryptedDni,
         dateOfBirth,
         gender: data.gender,
         bloodType: data.bloodType,
         occupation: data.occupation,
-        address: data.address,
         encryptedMedicalHistory,
         encryptedAllergies,
         lifestyle: data.lifestyle ?? undefined,
@@ -58,12 +66,13 @@ export async function savePatientProfile(
         id: data.patientId,
         name: data.name,
         email: data.email,
-        phone: data.phone,
+        encryptedPhone,
+        encryptedAddress,
+        encryptedDni,
         dateOfBirth,
         gender: data.gender,
         bloodType: data.bloodType,
         occupation: data.occupation,
-        address: data.address,
         encryptedMedicalHistory,
         encryptedAllergies,
         lifestyle: data.lifestyle ?? undefined,

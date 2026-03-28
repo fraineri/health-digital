@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { decrypt } from '@/lib/encryption';
 import { Patient } from '@prisma/client';
+import { LifestyleSchema } from '@/domain/ayurveda/validation-schemas';
 
 export interface PatientLifestyle {
   dietType?: string;
@@ -14,10 +15,19 @@ export interface PatientLifestyle {
 
 export type DecryptedPatientProfile = Omit<
   Patient,
-  'encryptedMedicalHistory' | 'encryptedAllergies' | 'lifestyle'
+  | 'encryptedMedicalHistory'
+  | 'encryptedAllergies'
+  | 'encryptedPhone'
+  | 'encryptedAddress'
+  | 'encryptedDni'
+  | 'lifestyle'
 > & {
   medicalHistory: string | null;
   allergies: string | null;
+  // phone sigue en el tipo base Patient pero su valor se fusiona:
+  // encryptedPhone descifrado OR phone plain (fallback Cal.com/legacy)
+  address: string | null;   // sobreescrito con valor descifrado
+  dni: string | null;       // nuevo campo desencriptado
   lifestyle: PatientLifestyle | null;
 };
 
@@ -37,28 +47,53 @@ export async function getPatientProfile(patientId: string): Promise<DecryptedPat
   const medicalHistory = patient.encryptedMedicalHistory
     ? decrypt(patient.encryptedMedicalHistory)
     : null;
-    
+
   const allergies = patient.encryptedAllergies
     ? decrypt(patient.encryptedAllergies)
     : null;
+
+  // Descifrar datos de contacto con fallback para registros pre-migración y Cal.com
+  const phone = patient.encryptedPhone
+    ? decrypt(patient.encryptedPhone)
+    : patient.phone;
+
+  const address = patient.encryptedAddress
+    ? decrypt(patient.encryptedAddress)
+    : patient.address;
+
+  const dni = patient.encryptedDni
+    ? decrypt(patient.encryptedDni)
+    : null;
+
+  // Validar lifestyle con Zod al leer
+  const lifestyleResult = LifestyleSchema.safeParse(patient.lifestyle);
+  const lifestyle = lifestyleResult.success ? lifestyleResult.data : null;
+  if (!lifestyleResult.success) {
+    console.error(
+      "[getPatientProfile] lifestyle inválido para paciente",
+      patientId,
+      ":",
+      lifestyleResult.error.format()
+    );
+  }
 
   return {
     id: patient.id,
     name: patient.name,
     email: patient.email,
-    phone: patient.phone,
+    phone,
     dateOfBirth: patient.dateOfBirth,
     gender: patient.gender,
     vulnerableGroup: patient.vulnerableGroup,
     occupation: patient.occupation,
-    address: patient.address,
+    address,
+    dni,
     bloodType: patient.bloodType,
     profileSource: patient.profileSource,
     lastProfileUpdate: patient.lastProfileUpdate,
     createdAt: patient.createdAt,
     updatedAt: patient.updatedAt,
-    // Tipamos explícitamente el Json a nuestra interface
-    lifestyle: patient.lifestyle as unknown as PatientLifestyle | null,
+    lifestyle,
     // Valores desencriptados
     medicalHistory,
     allergies,

@@ -1,10 +1,10 @@
 import { encrypt, decrypt } from "@/lib/encryption";
 import {
   PhysicalExamData,
-  PhysicalExamSnapshotDB,
   PhysicalExamPayload,
   DEFAULT_PHYSICAL_EXAM,
 } from "@/domain/ayurveda/physical-exam";
+import { PhysicalExamSnapshotDBSchema, PhysicalExamSnapshotDB } from "@/domain/ayurveda/validation-schemas";
 
 /**
  * Encripta un string solo si tiene contenido real (no vacio).
@@ -55,20 +55,29 @@ export function fromPhysicalExamDB(snapshot: unknown): PhysicalExamData {
     return { ...DEFAULT_PHYSICAL_EXAM };
   }
 
-  const s = snapshot as PhysicalExamSnapshotDB;
+  const result = PhysicalExamSnapshotDBSchema.safeParse(snapshot);
+  if (!result.success) {
+    console.error(
+      "[fromPhysicalExamDB] Schema inválido — datos de DB inconsistentes:",
+      result.error.format()
+    );
+    return { ...DEFAULT_PHYSICAL_EXAM };
+  }
+
+  const s = result.data;
 
   return {
-    weight: s.weight ?? null,
-    height: s.height ?? null,
-    systolicBP: s.systolicBP ?? null,
-    diastolicBP: s.diastolicBP ?? null,
-    heartRate: s.heartRate ?? null,
+    weight:           s.weight ?? null,
+    height:           s.height ?? null,
+    systolicBP:       s.systolicBP ?? null,
+    diastolicBP:      s.diastolicBP ?? null,
+    heartRate:        s.heartRate ?? null,
     oxygenSaturation: s.oxygenSaturation ?? null,
-    temperature: s.temperature ?? null,
-    respiratoryRate: s.respiratoryRate ?? null,
-    tongue: decryptToString(s.encryptedTongue),
-    pulse: decryptToString(s.encryptedPulse),
-    skinNailsEyes: decryptToString(s.encryptedSkinNailsEyes),
-    findings: decryptToString(s.encryptedFindings),
+    temperature:      s.temperature ?? null,
+    respiratoryRate:  s.respiratoryRate ?? null,
+    tongue:           decryptToString(s.encryptedTongue),
+    pulse:            decryptToString(s.encryptedPulse),
+    skinNailsEyes:    decryptToString(s.encryptedSkinNailsEyes),
+    findings:         decryptToString(s.encryptedFindings),
   };
 }

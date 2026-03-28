@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { AgniType, AmaLevel } from "@prisma/client";
 
 import { PhysicalExamPayloadSchema, PhysicalExamData } from "./physical-exam";
 import { AttributeDistributions } from "./attribute-catalog";
@@ -37,8 +38,8 @@ export const ConsultationSchema = z.object({
   dailyRoutine: z.string().nullable(),
 
   // Ayurvedic indicators
-  agniType: z.enum(["SAMA", "VISHAMA", "TIKSHNA", "MANDA"]).nullable(),
-  amaLevel: z.number().int().min(0).max(3).nullable(),
+  agniType: z.nativeEnum(AgniType).nullable(),
+  amaLevel: z.nativeEnum(AmaLevel).nullable(),
 
   // Clinical notes (encrypted server-side)
   notes: z.string().nullable(),
@@ -78,8 +79,8 @@ export interface WorkspaceFormValues {
   nutritionPlan: string | null;
   phytotherapy: string | null;
   dailyRoutine: string | null;
-  agniType: "SAMA" | "VISHAMA" | "TIKSHNA" | "MANDA" | null;
-  amaLevel: number;
+  agniType: AgniType | null;
+  amaLevel: AmaLevel | null;
   notes: string;
   anamnesis: string;
   diagnosis: string;

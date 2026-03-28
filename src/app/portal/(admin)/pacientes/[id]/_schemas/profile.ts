@@ -10,6 +10,7 @@ export const PatientProfileSchema = z.object({
   bloodType: z.string().optional().nullable(),
   occupation: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
+  dni: z.string().optional().nullable(),
   medicalHistory: z.string().optional().nullable(),
   allergies: z.string().optional().nullable(),
   lifestyle: z.object({

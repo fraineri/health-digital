@@ -1,16 +1,17 @@
 "use client";
 
+import type { AgniType, AmaLevel } from "@prisma/client";
 import { Beaker, ClipboardList } from "lucide-react";
-import { AgniSelector, AgniType } from "./AgniSelector";
+import { AgniSelector } from "./AgniSelector";
 import { AmaIndicator } from "./AmaIndicator";
 import { ClinicalNotesArea } from "./ClinicalNotes";
 
 interface ClinicalSynthesisBlockProps {
   agniType: AgniType | null;
-  amaLevel: number;
+  amaLevel: AmaLevel | null;
   diagnosis: string;
   onAgniChange: (value: AgniType) => void;
-  onAmaChange: (value: number) => void;
+  onAmaChange: (value: AmaLevel) => void;
   onDiagnosisChange: (value: string) => void;
   activeSymptomLabels?: string[];
 }

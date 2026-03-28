@@ -13,7 +13,6 @@ import { DEFAULT_PHYSICAL_EXAM } from "@/domain/ayurveda/physical-exam";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ProfileCompletionBadge } from "./ProfileCompletionBadge";
 import { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
-import type { AgniType } from "./AgniSelector";
 
 // Extracted Tabs
 import { HistoriaClinicaTab } from "./tabs/HistoriaClinicaTab";
@@ -70,8 +69,8 @@ export function PatientWorkspaceTabs({
       nutritionPlan: initialData?.nutritionPlan || null,
       phytotherapy: initialData?.phytotherapy || null,
       dailyRoutine: initialData?.dailyRoutine || null,
-      agniType: (initialData?.agniType as AgniType) || null,
-      amaLevel: initialData?.amaLevel ?? 0,
+      agniType: initialData?.agniType || null,
+      amaLevel: initialData?.amaLevel ?? null,
       notes: initialData?.notes || "",
       anamnesis: initialData?.anamnesis || "",
       diagnosis: initialData?.diagnosis || "",

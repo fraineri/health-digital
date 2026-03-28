@@ -1,8 +1,10 @@
 import { prisma } from '@/lib/prisma';
 import { decrypt } from '@/lib/encryption';
+import type { AgniType, AmaLevel } from '@prisma/client';
 import { SymptomSnapshot } from '@/domain/ayurveda/dosha-scoring';
 import { PhysicalExamData } from '@/domain/ayurveda/physical-exam';
 import { fromPhysicalExamDB } from '@/lib/physical-exam-serialization';
+import { SymptomSnapshotSchema } from '@/domain/ayurveda/validation-schemas';
 
 export interface DecryptedConsultation {
   id: string;
@@ -17,8 +19,8 @@ export interface DecryptedConsultation {
   nutritionPlan: string | null;
   phytotherapy: string | null;
   dailyRoutine: string | null;
-  agniType: string | null;
-  amaLevel: number | null;
+  agniType: AgniType | null;
+  amaLevel: AmaLevel | null;
   notes: string | null;
   anamnesis: string | null;
   diagnosis: string | null;
@@ -75,7 +77,18 @@ export async function getConsultationByAppointmentId(
     dailyRoutine: consultation.dailyRoutine,
     agniType: consultation.agniType,
     amaLevel: consultation.amaLevel,
-    symptomSnapshot: consultation.symptomSnapshot as SymptomSnapshot | null,
+    symptomSnapshot: (() => {
+      if (!consultation.symptomSnapshot) return null;
+      const r = SymptomSnapshotSchema.safeParse(consultation.symptomSnapshot);
+      if (!r.success) {
+        console.error(
+          "[getConsultationByAppointmentId] symptomSnapshot inválido:",
+          r.error.format()
+        );
+        return null;
+      }
+      return r.data as SymptomSnapshot;
+    })(),
     physicalExam,
     notes,
     anamnesis,
@@ -122,7 +135,19 @@ export async function getConsultationsByPatientId(
       dailyRoutine: consultation.dailyRoutine,
       agniType: consultation.agniType,
       amaLevel: consultation.amaLevel,
-      symptomSnapshot: consultation.symptomSnapshot as SymptomSnapshot | null,
+      symptomSnapshot: (() => {
+        if (!consultation.symptomSnapshot) return null;
+        const r = SymptomSnapshotSchema.safeParse(consultation.symptomSnapshot);
+        if (!r.success) {
+          console.error(
+            "[getConsultationsByPatientId] symptomSnapshot inválido (id:",
+            consultation.id, "):",
+            r.error.format()
+          );
+          return null;
+        }
+        return r.data as SymptomSnapshot;
+      })(),
       physicalExam,
       notes,
       anamnesis,
