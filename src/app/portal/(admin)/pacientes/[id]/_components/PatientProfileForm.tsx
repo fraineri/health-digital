@@ -28,6 +28,8 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
       gender: patient.gender || '',
       bloodType: patient.bloodType || '',
       occupation: patient.occupation || '',
+      address: patient.address || '',
+      dni: patient.dni || '',
       medicalHistory: patient.medicalHistory || '',
       allergies: patient.allergies || '',
       lifestyle: {
@@ -143,6 +145,24 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
                  <option value="O+">O+</option>
                  <option value="O-">O-</option>
                </select>
+             </div>
+
+             <div className="space-y-1.5 flex flex-col">
+               <label className="text-xs font-semibold text-slate-500">DNI / Documento</label>
+               <input
+                 {...register('dni')}
+                 placeholder="Ej: 12345678"
+                 className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm"
+               />
+             </div>
+
+             <div className="col-span-2 space-y-1.5 flex flex-col">
+               <label className="text-xs font-semibold text-slate-500">Dirección</label>
+               <input
+                 {...register('address')}
+                 placeholder="Ej: Av. Corrientes 1234, CABA"
+                 className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm"
+               />
              </div>
 
            </div>
