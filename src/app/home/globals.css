@@ -1,50 +1,20 @@
-:root {
-  /* Paleta de Colores (Referencia) */
-  --color-background: #faf9f6;
-  --color-foreground: #1a1a1a;
-  --color-primary: #869671;
-  --color-primary-hover: #72835d;
-  --color-surface: #ffffff;
-  --color-footer-bg: #0a1128;
-  --color-footer-text: #e2e8f0;
-  --color-border: #eef0eb;
-  
-  /* Fuentes */
-  --font-serif: var(--font-playfair), 'Georgia', serif;
-  --font-sans: var(--font-inter), 'Helvetica Neue', sans-serif;
-  
-  /* Sombra suave */
-  --shadow-sm: 0 4px 12px rgba(0,0,0,0.03);
-  --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
-  --shadow-lg: 0 16px 32px rgba(0,0,0,0.08);
-
-  /* Espaciado base */
-  --container-width: 1200px;
-  --container-padding: 2rem;
-}
+/* Landing-specific overrides (tokens come from portal.css @theme) */
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 100px; /* Offset for the sticky navbar */
-}
-
-/* Reset básico */
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  scroll-padding-top: 100px;
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  font-family: var(--font-sans);
+  background-color: var(--color-landing-bg);
+  color: var(--color-landing-fg);
+  font-family: var(--font-inter, 'Helvetica Neue', sans-serif);
   line-height: 1.6;
   overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-serif);
+  font-family: var(--font-playfair, 'Georgia', serif);
   font-weight: 600;
   line-height: 1.2;
 }
@@ -61,9 +31,8 @@ button {
   background: none;
 }
 
-/* Utils */
 .container {
-  max-width: var(--container-width);
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--container-padding);
+  padding: 0 2rem;
 }

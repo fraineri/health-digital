@@ -9,9 +9,10 @@
   /* Theme Colors */
   --color-primary: #88987d; /* Sage Green */
   --color-primary-foreground: #ffffff;
+  --color-primary-hover: #72835d; /* Darker sage for hover states */
   --color-sidebar: #1b202c; /* Navy Blue */
   --color-sidebar-foreground: #f8fafc; /* slate-50 */
-  
+
   /* Doshas */
   --color-vata: #6ba4d9;
   --color-pitta: #d97757;
@@ -39,6 +40,28 @@
 
   --color-card: #ffffff;
   --color-card-foreground: #0f172a;
+
+  /* Landing-specific tokens */
+  --color-landing-bg: #faf9f6; /* Off-white for landing sections */
+  --color-landing-fg: #1a1a1a; /* Landing foreground */
+  --color-surface: #ffffff; /* White sections on off-white bg */
+  --color-footer-bg: #0a1128; /* Dark navy footer */
+  --color-footer-text: #e2e8f0; /* Light text on dark footer */
+  --color-text-muted-warm: #4b5563; /* Subtitle gray (gray-600) */
+  --color-text-muted-cool: #6b7280; /* Description gray (gray-500) */
+  --color-star: #fbbf24; /* Amber for star ratings */
+
+  /* Landing shadows (softer) */
+  --shadow-landing-sm: 0 4px 12px rgba(0,0,0,0.03);
+  --shadow-landing-md: 0 8px 24px rgba(0,0,0,0.06);
+  --shadow-landing-lg: 0 16px 32px rgba(0,0,0,0.08);
+
+  /* Landing animations */
+  --animate-float-up: float-up 1s ease-out forwards;
+  --animate-slide-in: slide-in 0.8s ease-out 0.2s forwards;
+  --animate-slide-down: slide-down 0.3s ease-out forwards;
+  --animate-shimmer: shimmer 1.5s infinite;
+  --animate-subtab-in: subtab-fade-in 200ms ease-out;
 
   /* Elevated Radiuses for Pill/Soft aesthetic */
   --radius-lg: 1rem;
@@ -81,6 +104,28 @@
   }
 }
 
+/* Landing keyframes */
+@keyframes float-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Portal keyframes */
 @keyframes subtab-fade-in {
   from {
     opacity: 0;
