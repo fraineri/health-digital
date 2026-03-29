@@ -3,7 +3,7 @@
 import { useFormContext } from "react-hook-form";
 import { ChevronDown } from "lucide-react";
 import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
-import { TREATMENT_PLAN_OPTIONS } from "@/constants/ui-texts";
+import { TREATMENT_PLAN_OPTIONS } from "@/constants/treatment-options";
 
 export function TreatmentPlanForm() {
   const { watch, setValue } = useFormContext<WorkspaceFormValues>();

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { SYMPTOM_CATALOG, Symptom } from "@/domain/ayurveda/symptom-catalog";
+import { SYMPTOM_LABELS } from "@/constants/symptom-labels";
 
 interface SymptomChecklistProps {
   intensities: Record<string, number>;
@@ -16,15 +16,15 @@ const INTENSITY_LEVELS = [
 ];
 
 export function SymptomChecklist({ intensities, onChange }: SymptomChecklistProps) {
-  // Agragupamos síntomas por categoría
+  // Agrupamos síntomas por categoría
   const groupedSymptoms = useMemo(() => {
-    return SYMPTOM_CATALOG.reduce((acc, symptom) => {
-      if (!acc[symptom.category]) {
-        acc[symptom.category] = [];
+    return Object.entries(SYMPTOM_LABELS).reduce((acc, [id, { label, category }]) => {
+      if (!acc[category]) {
+        acc[category] = [];
       }
-      acc[symptom.category].push(symptom);
+      acc[category].push({ id, label });
       return acc;
-    }, {} as Record<string, Symptom[]>);
+    }, {} as Record<string, { id: string; label: string }[]>);
   }, []);
 
   const handleIntensityChange = (id: string, value: number) => {
@@ -49,13 +49,13 @@ export function SymptomChecklist({ intensities, onChange }: SymptomChecklistProp
             {symptoms.map((symptom) => {
               const currentIntensity = intensities[symptom.id] || 0;
               const isActive = currentIntensity > 0;
-              
+
               return (
-                <div 
-                  key={symptom.id} 
+                <div
+                  key={symptom.id}
                   className={`flex flex-col gap-2 p-3 rounded-xl border transition-all ${
-                    isActive 
-                      ? "bg-white border-primary/20 shadow-sm" 
+                    isActive
+                      ? "bg-white border-primary/20 shadow-sm"
                       : "bg-white border-border/40 hover:bg-slate-50"
                   }`}
                 >
@@ -63,7 +63,7 @@ export function SymptomChecklist({ intensities, onChange }: SymptomChecklistProp
                     <span className={`text-sm tracking-tight ${isActive ? "text-slate-900 font-medium" : "text-slate-600"}`}>
                       {symptom.label}
                     </span>
-                    
+
                     {/* Segmented Control for Intensity */}
                     <div className="flex bg-slate-100 rounded-lg p-0.5 border border-slate-200">
                        {INTENSITY_LEVELS.map((level) => (
@@ -73,8 +73,8 @@ export function SymptomChecklist({ intensities, onChange }: SymptomChecklistProp
                            title={level.tooltip}
                            onClick={() => handleIntensityChange(symptom.id, level.value)}
                            className={`w-7 h-7 flex items-center justify-center rounded-md text-xs font-bold transition-all ${
-                             currentIntensity === level.value 
-                               ? level.colorClass + " shadow-sm scale-[1.05] z-10" 
+                             currentIntensity === level.value
+                               ? level.colorClass + " shadow-sm scale-[1.05] z-10"
                                : "text-slate-400 hover:text-slate-600 hover:bg-slate-200/50"
                            }`}
                          >

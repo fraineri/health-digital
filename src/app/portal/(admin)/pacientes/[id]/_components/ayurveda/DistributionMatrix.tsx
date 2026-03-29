@@ -3,12 +3,12 @@
 import React, { useMemo, useCallback } from "react";
 import { useFormContext } from "react-hook-form";
 import {
-  ATTRIBUTE_CATALOG,
+  ATTRIBUTE_IDS,
   DoshaDistribution,
   DoshaKey,
-  PrakrutiAttribute,
   POINTS_PER_ROW,
 } from "@/domain/ayurveda/attribute-catalog";
+import { ATTRIBUTE_LABELS, type AttributeLabel } from "@/constants/attribute-labels";
 import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
 // ─── Dosha Configuration ─────────────────────────────────────────────────────
@@ -107,13 +107,15 @@ function DoshaColumn({
 
 // ─── AttributeCard ────────────────────────────────────────────────────────────
 interface AttributeCardProps {
-  attribute: PrakrutiAttribute;
+  id: string;
+  labels: AttributeLabel;
   distribution: DoshaDistribution;
   onChange: (attributeId: string, dosha: DoshaKey, delta: number) => void;
 }
 
 const AttributeCard = React.memo(function AttributeCard({
-  attribute,
+  id,
+  labels,
   distribution,
   onChange,
 }: AttributeCardProps) {
@@ -134,7 +136,7 @@ const AttributeCard = React.memo(function AttributeCard({
       {/* Card Header */}
       <div className="px-3 pt-2.5 pb-1 flex items-center justify-between">
         <span className="text-[13px] font-semibold text-slate-800">
-          {attribute.name}
+          {labels.name}
         </span>
         {isComplete ? (
           <span className="text-primary text-sm leading-none">✓</span>
@@ -151,11 +153,11 @@ const AttributeCard = React.memo(function AttributeCard({
           <DoshaColumn
             key={dosha}
             doshaKey={dosha}
-            expressionLabel={attribute.expressions[dosha].label}
+            expressionLabel={labels.expressions[dosha].label}
             value={distribution[dosha]}
             maxReached={maxReached}
-            onIncrement={() => onChange(attribute.id, dosha, 1)}
-            onDecrement={() => onChange(attribute.id, dosha, -1)}
+            onIncrement={() => onChange(id, dosha, 1)}
+            onDecrement={() => onChange(id, dosha, -1)}
           />
         ))}
       </div>
@@ -170,16 +172,18 @@ export function DistributionMatrix() {
   const distributions = watch("symptomSnapshot.distributions");
 
   const groupedAttributes = useMemo(() => {
-    return ATTRIBUTE_CATALOG.reduce((acc, attr) => {
-      if (!acc[attr.category]) acc[attr.category] = [];
-      acc[attr.category].push(attr);
+    return ATTRIBUTE_IDS.reduce((acc, id) => {
+      const labels = ATTRIBUTE_LABELS[id];
+      if (!labels) return acc;
+      if (!acc[labels.category]) acc[labels.category] = [];
+      acc[labels.category].push(id);
       return acc;
-    }, {} as Record<string, PrakrutiAttribute[]>);
+    }, {} as Record<string, string[]>);
   }, []);
 
   const completedCount = useMemo(() => {
-    return ATTRIBUTE_CATALOG.filter((attr) => {
-      const d = distributions[attr.id];
+    return ATTRIBUTE_IDS.filter((id) => {
+      const d = distributions[id];
       return d && d.vata + d.pitta + d.kapha === POINTS_PER_ROW;
     }).length;
   }, [distributions]);
@@ -209,13 +213,13 @@ export function DistributionMatrix() {
           Evaluación Prakriti
         </h3>
         <span className="text-xs text-slate-400 tabular-nums">
-          {completedCount} / {ATTRIBUTE_CATALOG.length} atributos
+          {completedCount} / {ATTRIBUTE_IDS.length} atributos
         </span>
       </div>
 
       {/* Categories */}
       <div className="space-y-6">
-        {Object.entries(groupedAttributes).map(([category, attributes]) => (
+        {Object.entries(groupedAttributes).map(([category, ids]) => (
           <div key={category}>
             <div className="flex items-center gap-2 mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-primary/40 shrink-0 block" />
@@ -225,12 +229,13 @@ export function DistributionMatrix() {
             </div>
 
             <div className="space-y-2">
-              {attributes.map((attribute) => (
+              {ids.map((id) => (
                 <AttributeCard
-                  key={attribute.id}
-                  attribute={attribute}
+                  key={id}
+                  id={id}
+                  labels={ATTRIBUTE_LABELS[id]}
                   distribution={
-                    distributions[attribute.id] ?? { vata: 0, pitta: 0, kapha: 0 }
+                    distributions[id] ?? { vata: 0, pitta: 0, kapha: 0 }
                   }
                   onChange={handlePointChange}
                 />

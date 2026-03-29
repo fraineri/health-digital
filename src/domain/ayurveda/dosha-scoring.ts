@@ -1,4 +1,4 @@
-import { SYMPTOM_CATALOG } from "./symptom-catalog";
+import { SYMPTOM_WEIGHTS } from "./symptom-catalog";
 import { AttributeDistributions } from "./attribute-catalog";
 
 export interface DoshaScores {
@@ -26,7 +26,7 @@ export function calculateDoshaScores(symptomIntensities: Record<string, number>)
   // Filter catalog to get only checked symptoms (intensity > 0)
   const activeSymptomIds = Object.keys(symptomIntensities).filter(id => symptomIntensities[id] > 0);
   
-  const selectedSymptoms = SYMPTOM_CATALOG.filter((symptom) =>
+  const selectedSymptoms = SYMPTOM_WEIGHTS.filter((symptom) =>
     activeSymptomIds.includes(symptom.id)
   );
 
