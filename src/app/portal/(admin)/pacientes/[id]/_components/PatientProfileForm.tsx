@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, startTransition } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -57,7 +57,9 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
   });
 
   const onSubmit = handleSubmit((data: SavePatientProfileInput) => {
-    formAction(data);
+    startTransition(() => {
+      formAction(data);
+    });
   });
 
   return (
