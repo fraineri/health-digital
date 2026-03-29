@@ -308,3 +308,55 @@ export async function saveConsultationData(
     };
   }
 }
+
+export async function saveAgniType(
+  appointmentId: string,
+  agniType: AgniType
+): Promise<{ success: boolean; message: string; error?: string }> {
+  try {
+    const consultation = await prisma.consultation.findUnique({
+      where: { appointmentId },
+    });
+
+    if (!consultation) {
+      return { success: true, message: "Agni registrado (pendiente de guardar consulta)" };
+    }
+
+    await prisma.consultation.update({
+      where: { id: consultation.id },
+      data: { agniType },
+    });
+
+    revalidatePath(`/portal/pacientes/${consultation.patientId}`);
+    return { success: true, message: "Agni guardado" };
+  } catch (e) {
+    console.error("[saveAgniType]", e);
+    return { success: false, message: "Error al guardar Agni", error: "Error interno del servidor" };
+  }
+}
+
+export async function saveAmaLevel(
+  appointmentId: string,
+  amaLevel: AmaLevel
+): Promise<{ success: boolean; message: string; error?: string }> {
+  try {
+    const consultation = await prisma.consultation.findUnique({
+      where: { appointmentId },
+    });
+
+    if (!consultation) {
+      return { success: true, message: "Ama registrado (pendiente de guardar consulta)" };
+    }
+
+    await prisma.consultation.update({
+      where: { id: consultation.id },
+      data: { amaLevel },
+    });
+
+    revalidatePath(`/portal/pacientes/${consultation.patientId}`);
+    return { success: true, message: "Ama guardado" };
+  } catch (e) {
+    console.error("[saveAmaLevel]", e);
+    return { success: false, message: "Error al guardar Ama", error: "Error interno del servidor" };
+  }
+}

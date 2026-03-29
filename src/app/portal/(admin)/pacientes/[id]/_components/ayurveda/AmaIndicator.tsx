@@ -66,6 +66,8 @@ export function AmaIndicator({ value, onChange }: AmaIndicatorProps) {
           return (
             <button
               key={level.id}
+              type="button"
+              aria-pressed={isActive}
               onClick={() => onChange(level.id)}
               className={cn(
                 "flex-1 py-2.5 rounded-lg text-xs font-bold transition-all transform active:scale-95",

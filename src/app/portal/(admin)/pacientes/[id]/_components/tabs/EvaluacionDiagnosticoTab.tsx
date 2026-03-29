@@ -5,11 +5,12 @@ import { useFormContext } from "react-hook-form";
 import { Wind, Flame, Droplets } from "lucide-react";
 import { DistributionMatrix } from "../ayurveda/DistributionMatrix";
 import { DoshaSlider } from "../ayurveda/DoshaSlider";
+import { ClinicalSynthesisBlock } from "../medical-record/ClinicalSynthesisBlock";
 import { calculateDoshaScoresV2 } from "@/domain/ayurveda/dosha-scoring";
 import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
 export function EvaluacionDiagnosticoTab() {
-  const { watch, setValue } = useFormContext<WorkspaceFormValues>();
+  const { watch, setValue } = useFormContext<WorkspaceFormValues>(); // setValue usado por DoshaSliders
 
   const distributions = watch("symptomSnapshot.distributions");
   const vataFinal = watch("vataFinal");
@@ -82,6 +83,8 @@ export function EvaluacionDiagnosticoTab() {
         <div className="bg-white rounded-b-3xl border border-t-0 border-border/40 shadow-sm p-8">
           <DistributionMatrix />
         </div>
+
+        <ClinicalSynthesisBlock />
 
       </div>
     </div>

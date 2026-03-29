@@ -67,6 +67,8 @@ export function AgniSelector({ value, onChange }: AgniSelectorProps) {
           return (
             <button
               key={option.id}
+              type="button"
+              aria-pressed={isActive}
               onClick={() => onChange(option.id)}
               className={cn(
                 "relative flex flex-col items-center justify-center p-4 rounded-xl border border-border/60 bg-white transition-all hover:shadow-md group",
