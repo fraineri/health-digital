@@ -1,4 +1,4 @@
-import { getTodaysAppointments, getAppointmentStatus } from "@/queries/appointments";
+import { getTodaysAppointments, getAppointmentStatus } from "@/services/appointment.service";
 import { PatientQueueItem } from "./PatientQueueItem";
 import { Leaf } from "lucide-react";
 import { InboxRefresher } from "./InboxRefresher";

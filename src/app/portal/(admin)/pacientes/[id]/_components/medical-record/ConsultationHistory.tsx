@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DecryptedConsultation } from "@/queries/consultations";
+import type { DecryptedConsultation } from "@/services/consultation.service";
 import { isV2Snapshot } from "@/domain/ayurveda/dosha-scoring";
 import { Calendar, ChevronDown, ChevronUp, FileText, Activity } from "lucide-react";
 

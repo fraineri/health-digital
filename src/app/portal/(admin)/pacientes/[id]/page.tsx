@@ -2,9 +2,8 @@ import { AppointmentInbox } from "@/app/portal/(admin)/_components/AppointmentIn
 import { PatientWorkspaceTabs } from "./_components/PatientWorkspaceTabs";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { getConsultationByAppointmentId, getConsultationsByPatientId } from "@/queries/consultations";
-import { getPatientProfile, calculateProfileScore } from "@/queries/patient-profile";
-import { getStudyCatalogNames, getLatestStudiesForPatient } from "@/queries/studies";
+import { getConsultationByAppointmentId, getConsultationsByPatientId, getStudyCatalogNames, getLatestStudiesForPatient } from "@/services/consultation.service";
+import { getPatientProfile, calculateProfileScore } from "@/services/patient.service";
 
 export const dynamic = 'force-dynamic';
 

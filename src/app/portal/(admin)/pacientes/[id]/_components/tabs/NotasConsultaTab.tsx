@@ -3,7 +3,7 @@
 import { useFormContext } from "react-hook-form";
 import { FileEdit } from "lucide-react";
 import { ConsultationHistory } from "../medical-record/ConsultationHistory";
-import type { DecryptedConsultation } from "@/queries/consultations";
+import type { DecryptedConsultation } from "@/services/consultation.service";
 import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
 interface NotasConsultaTabProps {

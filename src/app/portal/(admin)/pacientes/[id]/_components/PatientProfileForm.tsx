@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User, Activity, AlertCircle, Heart } from "lucide-react";
 import { ProfileFormSection } from "./shared/ProfileFormSection";
-import type { DecryptedPatientProfile } from "@/queries/patient-profile";
+import type { DecryptedPatientProfile } from "@/services/patient.service";
 import { savePatientProfile } from "@/app/portal/(admin)/pacientes/[id]/_actions/profile";
 import { PatientProfileSchema, type SavePatientProfileInput } from "@/app/portal/(admin)/pacientes/[id]/_schemas/profile";
 

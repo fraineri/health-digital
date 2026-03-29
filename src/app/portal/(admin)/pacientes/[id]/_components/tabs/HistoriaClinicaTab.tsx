@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { User, FileText, Stethoscope } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import type { DecryptedPatientProfile } from "@/queries/patient-profile";
+import type { DecryptedPatientProfile } from "@/services/patient.service";
 import { PhysicalExamData } from "@/domain/ayurveda/physical-exam";
 import { DatosPerfilSubTab } from "./historia-clinica/DatosPerfilSubTab";
 import { EstudiosComplementariosSubTab } from "./historia-clinica/EstudiosComplementariosSubTab";

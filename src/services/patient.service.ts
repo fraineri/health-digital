@@ -1,7 +1,9 @@
 import { prisma } from '@/lib/prisma';
-import { decrypt } from '@/lib/encryption';
+import { decrypt, encrypt } from '@/lib/encryption';
 import { Patient } from '@prisma/client';
 import { LifestyleSchema } from '@/domain/ayurveda/validation-schemas';
+import { revalidatePath } from 'next/cache';
+import type { SavePatientProfileInput } from '@/app/portal/(admin)/pacientes/[id]/_schemas/profile';
 
 export interface PatientLifestyle {
   dietType?: string;
@@ -24,16 +26,11 @@ export type DecryptedPatientProfile = Omit<
 > & {
   medicalHistory: string | null;
   allergies: string | null;
-  // phone sigue en el tipo base Patient pero su valor se fusiona:
-  // encryptedPhone descifrado OR phone plain (fallback Cal.com/legacy)
-  address: string | null;   // sobreescrito con valor descifrado
-  dni: string | null;       // nuevo campo desencriptado
+  address: string | null;
+  dni: string | null;
   lifestyle: PatientLifestyle | null;
 };
 
-/**
- * Recupera un paciente por su ID y desencripta sus campos sensibles on-the-fly.
- */
 export async function getPatientProfile(patientId: string): Promise<DecryptedPatientProfile | null> {
   const patient = await prisma.patient.findUnique({
     where: { id: patientId },
@@ -43,7 +40,6 @@ export async function getPatientProfile(patientId: string): Promise<DecryptedPat
     return null;
   }
 
-  // Desencriptar campos si existen
   const medicalHistory = patient.encryptedMedicalHistory
     ? decrypt(patient.encryptedMedicalHistory)
     : null;
@@ -52,7 +48,6 @@ export async function getPatientProfile(patientId: string): Promise<DecryptedPat
     ? decrypt(patient.encryptedAllergies)
     : null;
 
-  // Descifrar datos de contacto con fallback para registros pre-migración y Cal.com
   const phone = patient.encryptedPhone
     ? decrypt(patient.encryptedPhone)
     : patient.phone;
@@ -65,7 +60,6 @@ export async function getPatientProfile(patientId: string): Promise<DecryptedPat
     ? decrypt(patient.encryptedDni)
     : null;
 
-  // Validar lifestyle con Zod al leer
   const lifestyleResult = LifestyleSchema.safeParse(patient.lifestyle);
   const lifestyle = lifestyleResult.success ? lifestyleResult.data : null;
   if (!lifestyleResult.success) {
@@ -94,34 +88,95 @@ export async function getPatientProfile(patientId: string): Promise<DecryptedPat
     createdAt: patient.createdAt,
     updatedAt: patient.updatedAt,
     lifestyle,
-    // Valores desencriptados
     medicalHistory,
     allergies,
   };
 }
 
-/**
- * Calcula el "Health Score" o porcentaje de completitud del perfil.
- * Utilizado para mostrar el badge de alerta a la médica.
- */
 export function calculateProfileScore(patient: DecryptedPatientProfile | Patient): number {
   let score = 0;
 
-  // Puntos basados en la importancia del dato (Total = 100%)
   if (patient.phone) score += 15;
   if (patient.dateOfBirth) score += 15;
   if (patient.gender) score += 15;
-  
-  // Verificamos de forma segura si el campo está encriptado (tipo Prisma) o en texto plano (tipo Decrypted)
-  const hasMedicalHistory = 'encryptedMedicalHistory' in patient 
-    ? !!patient.encryptedMedicalHistory 
+
+  const hasMedicalHistory = 'encryptedMedicalHistory' in patient
+    ? !!patient.encryptedMedicalHistory
     : !!patient.medicalHistory;
   if (hasMedicalHistory) score += 30;
-  
-  const hasAllergies = 'encryptedAllergies' in patient 
-    ? !!patient.encryptedAllergies 
+
+  const hasAllergies = 'encryptedAllergies' in patient
+    ? !!patient.encryptedAllergies
     : !!patient.allergies;
   if (hasAllergies) score += 25;
 
   return score;
+}
+
+export async function savePatientProfileData(
+  data: SavePatientProfileInput
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const encryptedMedicalHistory = data.medicalHistory ? encrypt(data.medicalHistory) : null;
+    const encryptedAllergies = data.allergies ? encrypt(data.allergies) : null;
+    const encryptedPhone   = data.phone   ? encrypt(data.phone)   : null;
+    const encryptedAddress = data.address ? encrypt(data.address) : null;
+    const encryptedDni     = data.dni     ? encrypt(data.dni)     : null;
+
+    let dateOfBirth: Date | null = null;
+    if (data.dateOfBirth) {
+      const parsedDate = new Date(data.dateOfBirth);
+      if (!isNaN(parsedDate.getTime())) {
+        dateOfBirth = parsedDate;
+      }
+    }
+
+    await prisma.patient.upsert({
+      where: { id: data.patientId },
+      update: {
+        name: data.name,
+        email: data.email,
+        encryptedPhone,
+        encryptedAddress,
+        encryptedDni,
+        dateOfBirth,
+        gender: data.gender,
+        bloodType: data.bloodType,
+        occupation: data.occupation,
+        encryptedMedicalHistory,
+        encryptedAllergies,
+        lifestyle: data.lifestyle ?? undefined,
+        profileSource: 'PORTAL',
+        lastProfileUpdate: new Date(),
+      },
+      create: {
+        id: data.patientId,
+        name: data.name,
+        email: data.email,
+        encryptedPhone,
+        encryptedAddress,
+        encryptedDni,
+        dateOfBirth,
+        gender: data.gender,
+        bloodType: data.bloodType,
+        occupation: data.occupation,
+        encryptedMedicalHistory,
+        encryptedAllergies,
+        lifestyle: data.lifestyle ?? undefined,
+        profileSource: 'PORTAL',
+        lastProfileUpdate: new Date(),
+      },
+    });
+
+    revalidatePath("/portal");
+    revalidatePath(`/portal/pacientes/${data.patientId}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error("[savePatientProfileData] Error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Error desconocido al guardar el perfil",
+    };
+  }
 }
