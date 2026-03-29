@@ -7,7 +7,8 @@ import { Wind, Flame, Droplets, Sparkles, Activity, FileText, History, Share2, C
 import { SaveButton } from "./shared/SaveButton";
 import { ConsultationHistory } from "./medical-record/ConsultationHistory";
 import { calculateDoshaScoresV2, isV2Snapshot } from "@/domain/ayurveda/dosha-scoring";
-import { saveConsultationAction, type ConsultationActionState } from "@/app/portal/(admin)/pacientes/[id]/_actions/consultation";
+import { saveConsultationAction } from "@/app/portal/(admin)/pacientes/[id]/_actions/consultation";
+import type { ActionState } from "@/lib/action-wrapper";
 import type { DecryptedConsultation, SaveConsultationInput } from "@/services/consultation.service";
 import type { DecryptedPatientProfile } from "@/services/patient.service";
 import { DEFAULT_PHYSICAL_EXAM } from "@/domain/ayurveda/physical-exam";
@@ -49,7 +50,7 @@ export function PatientWorkspaceTabs({
   const [activeTab, setActiveTab] = useState("historia");
   const [, startTransition] = useTransition();
 
-  const [state, consultationAction, isPending] = useActionState<ConsultationActionState, SaveConsultationInput>(
+  const [state, consultationAction, isPending] = useActionState<ActionState, SaveConsultationInput>(
     saveConsultationAction,
     null
   );

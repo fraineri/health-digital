@@ -11,8 +11,8 @@ import { ClinicalNotesArea } from "./ClinicalNotes";
 import {
   saveAgniTypeAction,
   saveAmaLevelAction,
-  type ClinicalActionState
 } from "@/app/portal/(admin)/pacientes/[id]/_actions/clinical";
+import type { ActionState } from "@/lib/action-wrapper";
 import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
 interface ClinicalSynthesisBlockProps {
@@ -30,12 +30,12 @@ export function ClinicalSynthesisBlock({ activeSymptomLabels = [] }: ClinicalSyn
   const [, startTransition] = useTransition();
 
   const [agniState, agniAction] = useActionState<
-    ClinicalActionState,
+    ActionState,
     { appointmentId: string; agniType: AgniType }
   >(saveAgniTypeAction, null);
 
   const [amaState, amaAction] = useActionState<
-    ClinicalActionState,
+    ActionState,
     { appointmentId: string; amaLevel: AmaLevel }
   >(saveAmaLevelAction, null);
 

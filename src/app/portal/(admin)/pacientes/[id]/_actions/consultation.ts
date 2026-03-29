@@ -1,27 +1,29 @@
 "use server";
 
-import { saveConsultationData } from "@/services/consultation.service";
-import type { SaveConsultationInput } from "@/services/consultation.service";
+import { auth } from "@/auth";
+import { type ActionState } from "@/lib/action-wrapper";
+import { saveConsultationData, type SaveConsultationInput } from "@/services/consultation.service";
 
-export type ConsultationActionState = { success: boolean; message: string; error?: string } | null;
-
-export async function saveConsultation(
-  input: SaveConsultationInput
-): Promise<ConsultationActionState> {
-  const result = await saveConsultationData(input);
-  return {
-    ...result,
-    message: result.success ? "Consulta guardada con éxito" : (result.error ?? "Error al guardar la consulta"),
-  };
-}
+export type { ActionState };
 
 export async function saveConsultationAction(
-  _prevState: ConsultationActionState,
+  _prevState: ActionState,
   input: SaveConsultationInput
-): Promise<ConsultationActionState> {
-  const result = await saveConsultationData(input);
-  return {
-    ...result,
-    message: result.success ? "Consulta guardada con éxito" : (result.error ?? "Error al guardar la consulta"),
-  };
+): Promise<ActionState> {
+  const session = await auth();
+  const userId = session?.user?.id ?? session?.user?.email ?? "UNKNOWN";
+
+  try {
+    const result = await saveConsultationData(input, userId);
+    return result.success
+      ? { success: true, message: "Consulta guardada con éxito" }
+      : { success: false, message: result.error ?? "Error al guardar la consulta", error: result.error };
+  } catch (error) {
+    console.error("[saveConsultationAction]", error);
+    return {
+      success: false,
+      message: "Error al guardar la consulta",
+      error: error instanceof Error ? error.message : "Error interno del servidor",
+    };
+  }
 }
