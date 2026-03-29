@@ -3,8 +3,8 @@
 import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { Wind, Flame, Droplets } from "lucide-react";
-import { DistributionMatrix } from "../DistributionMatrix";
-import { DoshaSlider } from "../DoshaSlider";
+import { DistributionMatrix } from "../ayurveda/DistributionMatrix";
+import { DoshaSlider } from "../ayurveda/DoshaSlider";
 import { calculateDoshaScoresV2 } from "@/domain/ayurveda/dosha-scoring";
 import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 

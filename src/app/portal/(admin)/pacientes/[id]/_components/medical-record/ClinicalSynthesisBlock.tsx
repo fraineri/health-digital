@@ -2,8 +2,8 @@
 
 import type { AgniType, AmaLevel } from "@prisma/client";
 import { Beaker, ClipboardList } from "lucide-react";
-import { AgniSelector } from "./AgniSelector";
-import { AmaIndicator } from "./AmaIndicator";
+import { AgniSelector } from "../ayurveda/AgniSelector";
+import { AmaIndicator } from "../ayurveda/AmaIndicator";
 import { ClinicalNotesArea } from "./ClinicalNotes";
 
 interface ClinicalSynthesisBlockProps {

@@ -1,5 +1,5 @@
 import { Leaf } from "lucide-react";
-import { TreatmentPlanForm } from "../TreatmentPlanForm";
+import { TreatmentPlanForm } from "../medical-record/TreatmentPlanForm";
 
 export function PrescripcionIntegralTab() {
   return (

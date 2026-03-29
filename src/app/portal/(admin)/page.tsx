@@ -1,6 +1,6 @@
 import { AppointmentInbox } from "./_components/AppointmentInbox";
-import { DoshaCard } from "@/app/portal/(admin)/pacientes/[id]/_components/DoshaCard";
-import { ClinicalNotesArea } from "@/app/portal/(admin)/pacientes/[id]/_components/ClinicalNotes";
+import { DoshaCard } from "@/app/portal/(admin)/pacientes/[id]/_components/ayurveda/DoshaCard";
+import { ClinicalNotesArea } from "@/app/portal/(admin)/pacientes/[id]/_components/medical-record/ClinicalNotes";
 import { Wind, Flame, Droplets, History, Share2, Sparkles, FileText, ArrowRight, ChevronDown } from "lucide-react";
 
 export default function WorkspacePage() {

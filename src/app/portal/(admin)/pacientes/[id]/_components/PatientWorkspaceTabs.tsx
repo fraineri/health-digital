@@ -3,15 +3,15 @@
 import { useState, useTransition, useMemo, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Wind, Flame, Droplets, Sparkles, Activity, FileText, History, Share2, ClipboardList, BookOpen, Leaf, User, FileEdit } from "lucide-react";
-import { SaveButton } from "./SaveButton";
-import { ConsultationHistory } from "./ConsultationHistory";
+import { SaveButton } from "./shared/SaveButton";
+import { ConsultationHistory } from "./medical-record/ConsultationHistory";
 import { calculateDoshaScoresV2, isV2Snapshot } from "@/domain/ayurveda/dosha-scoring";
 import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/_actions/consultation";
-import { DecryptedConsultation } from "@/queries/consultations";
-import { DecryptedPatientProfile } from "@/queries/patient-profile";
+import type { DecryptedConsultation } from "@/queries/consultations";
+import type { DecryptedPatientProfile } from "@/queries/patient-profile";
 import { DEFAULT_PHYSICAL_EXAM } from "@/domain/ayurveda/physical-exam";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ProfileCompletionBadge } from "./ProfileCompletionBadge";
+import { ProfileCompletionBadge } from "./shared/ProfileCompletionBadge";
 import { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
 // Extracted Tabs

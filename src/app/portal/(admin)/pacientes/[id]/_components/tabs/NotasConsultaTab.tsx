@@ -2,8 +2,8 @@
 
 import { useFormContext } from "react-hook-form";
 import { FileEdit } from "lucide-react";
-import { ConsultationHistory } from "../ConsultationHistory";
-import { DecryptedConsultation } from "@/queries/consultations";
+import { ConsultationHistory } from "../medical-record/ConsultationHistory";
+import type { DecryptedConsultation } from "@/queries/consultations";
 import type { WorkspaceFormValues } from "@/domain/ayurveda/consultation-schema";
 
 interface NotasConsultaTabProps {
