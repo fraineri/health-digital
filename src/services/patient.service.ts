@@ -4,6 +4,7 @@ import { Patient } from '@prisma/client';
 import { LifestyleSchema } from '@/domain/ayurveda/validation-schemas';
 import { revalidatePath } from 'next/cache';
 import type { SavePatientProfileInput } from '@/app/portal/(admin)/pacientes/[id]/_schemas/profile';
+import { createAuditLog } from './audit.service';
 
 export interface PatientLifestyle {
   dietType?: string;
@@ -31,7 +32,7 @@ export type DecryptedPatientProfile = Omit<
   lifestyle: PatientLifestyle | null;
 };
 
-export async function getPatientProfile(patientId: string): Promise<DecryptedPatientProfile | null> {
+export async function getPatientProfile(patientId: string, userId = "SYSTEM"): Promise<DecryptedPatientProfile | null> {
   const patient = await prisma.patient.findUnique({
     where: { id: patientId },
   });
@@ -39,6 +40,15 @@ export async function getPatientProfile(patientId: string): Promise<DecryptedPat
   if (!patient) {
     return null;
   }
+
+  // Fire-and-forget: registra acceso a datos del paciente (incluye PII desencriptado)
+  createAuditLog({
+    userId,
+    action: 'READ',
+    entityType: 'Patient',
+    entityId: patientId,
+    metadata: { decryptedFields: ['phone', 'address', 'dni', 'medicalHistory', 'allergies'] },
+  });
 
   const medicalHistory = patient.encryptedMedicalHistory
     ? decrypt(patient.encryptedMedicalHistory)
@@ -114,7 +124,8 @@ export function calculateProfileScore(patient: DecryptedPatientProfile | Patient
 }
 
 export async function savePatientProfileData(
-  data: SavePatientProfileInput
+  data: SavePatientProfileInput,
+  userId = "SYSTEM"
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const encryptedMedicalHistory = data.medicalHistory ? encrypt(data.medicalHistory) : null;
@@ -170,6 +181,14 @@ export async function savePatientProfileData(
 
     revalidatePath("/portal");
     revalidatePath(`/portal/pacientes/${data.patientId}`);
+
+    // Fire-and-forget: registra modificación del perfil del paciente
+    createAuditLog({
+      userId,
+      action: 'WRITE',
+      entityType: 'Patient',
+      entityId: data.patientId,
+    });
 
     return { success: true };
   } catch (error) {

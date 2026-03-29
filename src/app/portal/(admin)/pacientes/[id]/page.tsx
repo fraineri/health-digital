@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { getConsultationByAppointmentId, getConsultationsByPatientId, getStudyCatalogNames, getLatestStudiesForPatient } from "@/services/consultation.service";
 import { getPatientProfile, calculateProfileScore } from "@/services/patient.service";
+import { auth } from "@/auth";
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +15,9 @@ export default async function SelectedPatientPage({
 }) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
+
+  const session = await auth();
+  const userId = session?.user?.id ?? session?.user?.email ?? "UNKNOWN";
 
   // Retrieve the base patient with appointments for the workspace
   const patient = await prisma.patient.findUnique({
@@ -33,17 +37,17 @@ export default async function SelectedPatientPage({
   }
 
   // Retrieve the decrypted profile and calculate score
-  const profile = await getPatientProfile(id);
+  const profile = await getPatientProfile(id, userId);
   const profileScore = profile ? calculateProfileScore(profile) : 0;
 
   console.log(`[SelectedPatientPage] Patient FOUND: ${patient.id} - ${patient.name}`);
 
   const latestAppointment = patient.appointments[0];
   const triage = latestAppointment?.triageResponses?.[0];
-  
+
   let initialConsultationData = null;
   if (latestAppointment) {
-    initialConsultationData = await getConsultationByAppointmentId(latestAppointment.id);
+    initialConsultationData = await getConsultationByAppointmentId(latestAppointment.id, userId);
   }
 
   // Fetch consultation history for the read-only Notes tab

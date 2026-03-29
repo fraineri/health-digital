@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { decrypt, encrypt } from '@/lib/encryption';
 import { Prisma, AgniType, AmaLevel } from '@prisma/client';
+import { createAuditLog } from './audit.service';
 import { calculateDoshaScoresV2, SymptomSnapshotV2 } from '@/domain/ayurveda/dosha-scoring';
 import { SymptomSnapshot } from '@/domain/ayurveda/dosha-scoring';
 import { PhysicalExamData, PhysicalExamPayload, PhysicalExamPayloadSchema } from '@/domain/ayurveda/physical-exam';
@@ -53,7 +54,8 @@ export interface SaveConsultationInput {
 }
 
 export async function getConsultationByAppointmentId(
-  appointmentId: string
+  appointmentId: string,
+  userId = "SYSTEM"
 ): Promise<DecryptedConsultation | null> {
   const consultation = await prisma.consultation.findUnique({
     where: { appointmentId },
@@ -62,6 +64,15 @@ export async function getConsultationByAppointmentId(
   if (!consultation) {
     return null;
   }
+
+  // Fire-and-forget: registra acceso a datos de consulta (incluye notas cifradas)
+  createAuditLog({
+    userId,
+    action: 'READ',
+    entityType: 'Consultation',
+    entityId: consultation.id,
+    metadata: { decryptedFields: ['notes', 'anamnesis', 'diagnosis'] },
+  });
 
   const notes = consultation.encryptedNotes
     ? decrypt(consultation.encryptedNotes)
@@ -201,7 +212,8 @@ export async function getLatestStudiesForPatient(
 }
 
 export async function saveConsultationData(
-  input: SaveConsultationInput
+  input: SaveConsultationInput,
+  userId = "SYSTEM"
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const suggestedScores = calculateDoshaScoresV2(input.symptomSnapshot.distributions);
@@ -299,6 +311,14 @@ export async function saveConsultationData(
     revalidatePath("/portal");
     revalidatePath(`/portal/pacientes/${input.patientId}`);
 
+    // Fire-and-forget: registra modificación de consulta
+    createAuditLog({
+      userId,
+      action: 'WRITE',
+      entityType: 'Consultation',
+      entityId: input.patientId,
+    });
+
     return { success: true };
   } catch (error) {
     console.error("[saveConsultationData] Error:", error);
@@ -311,7 +331,8 @@ export async function saveConsultationData(
 
 export async function saveAgniType(
   appointmentId: string,
-  agniType: AgniType
+  agniType: AgniType,
+  userId = "SYSTEM"
 ): Promise<{ success: boolean; message: string; error?: string }> {
   try {
     const consultation = await prisma.consultation.findUnique({
@@ -328,6 +349,7 @@ export async function saveAgniType(
     });
 
     revalidatePath(`/portal/pacientes/${consultation.patientId}`);
+    createAuditLog({ userId, action: 'WRITE', entityType: 'Consultation', entityId: consultation.id });
     return { success: true, message: "Agni guardado" };
   } catch (e) {
     console.error("[saveAgniType]", e);
@@ -337,7 +359,8 @@ export async function saveAgniType(
 
 export async function saveAmaLevel(
   appointmentId: string,
-  amaLevel: AmaLevel
+  amaLevel: AmaLevel,
+  userId = "SYSTEM"
 ): Promise<{ success: boolean; message: string; error?: string }> {
   try {
     const consultation = await prisma.consultation.findUnique({
@@ -354,6 +377,7 @@ export async function saveAmaLevel(
     });
 
     revalidatePath(`/portal/pacientes/${consultation.patientId}`);
+    createAuditLog({ userId, action: 'WRITE', entityType: 'Consultation', entityId: consultation.id });
     return { success: true, message: "Ama guardado" };
   } catch (e) {
     console.error("[saveAmaLevel]", e);
