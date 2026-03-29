@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User, Activity, AlertCircle, Heart } from "lucide-react";
+import { User, Activity, Heart } from "lucide-react";
 import { ProfileFormSection } from "./shared/ProfileFormSection";
 import type { DecryptedPatientProfile } from "@/services/patient.service";
-import { savePatientProfile } from "@/app/portal/(admin)/pacientes/[id]/_actions/profile";
+import { savePatientProfileAction, type ProfileActionState } from "@/app/portal/(admin)/pacientes/[id]/_actions/profile";
 import { PatientProfileSchema, type SavePatientProfileInput } from "@/app/portal/(admin)/pacientes/[id]/_schemas/profile";
 
 interface PatientProfileFormProps {
@@ -14,10 +14,12 @@ interface PatientProfileFormProps {
 }
 
 export function PatientProfileForm({ patient }: PatientProfileFormProps) {
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [state, formAction, isPending] = useActionState<ProfileActionState, SavePatientProfileInput>(
+    savePatientProfileAction,
+    null
+  );
 
-  const { register, handleSubmit, formState: { errors, isDirty, isSubmitting } } = useForm<SavePatientProfileInput>({
+  const { register, handleSubmit, formState: { errors, isDirty } } = useForm<SavePatientProfileInput>({
     resolver: zodResolver(PatientProfileSchema),
     defaultValues: {
       patientId: patient.id,
@@ -44,17 +46,9 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
     }
   });
 
-  const onSubmit = async (data: SavePatientProfileInput) => {
-    setErrorMsg(null);
-    setIsSuccess(false);
-    const result = await savePatientProfile(data);
-    if (result.success) {
-      setIsSuccess(true);
-      setTimeout(() => setIsSuccess(false), 3000);
-    } else {
-      setErrorMsg(result.error || 'Error al guardar el perfil');
-    }
-  };
+  const onSubmit = handleSubmit((data: SavePatientProfileInput) => {
+    formAction(data);
+  });
 
   return (
     <div className="bg-white rounded-3xl border border-border/40 shadow-sm overflow-hidden flex flex-col">
@@ -65,15 +59,15 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
           Información administrativa pre-carga y cuestionario estático del paciente.
         </p>
 
-        {errorMsg && (
+        {state && !state.success && state.error && (
           <div className="mt-4 p-3 bg-red-50 text-red-600 rounded-xl border border-red-200 text-sm font-medium">
-             {errorMsg}
+            {state.error}
           </div>
         )}
       </div>
 
       {/* Form Content */}
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onSubmit}>
       <div className="p-8 space-y-10">
         <ProfileFormSection title="Datos Personales" icon={<User className="w-4 h-4" />}>
            <div className="grid grid-cols-2 gap-6">
@@ -303,13 +297,13 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
            Actualizado: {patient.lastProfileUpdate ? new Date(patient.lastProfileUpdate).toLocaleDateString('es-AR') : 'Nunca'}
          </span>
          <div className="flex items-center gap-4">
-           {isSuccess && <span className="text-sm font-bold text-primary">¡Guardado con éxito!</span>}
+           {state?.success && <span className="text-sm font-bold text-primary">¡Guardado con éxito!</span>}
            <button
              type="submit"
-             disabled={isSubmitting || !isDirty}
+             disabled={isPending || !isDirty}
              className="bg-primary hover:bg-[#7a8c72] disabled:bg-primary/50 text-white px-8 h-12 rounded-full font-bold shadow-sm transition-all flex items-center gap-2"
            >
-             {isSubmitting ? "Guardando..." : "Guardar Perfil"}
+             {isPending ? "Guardando..." : "Guardar Perfil"}
            </button>
          </div>
       </div>

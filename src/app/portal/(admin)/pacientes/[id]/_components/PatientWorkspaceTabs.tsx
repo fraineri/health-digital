@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useTransition, useMemo, useEffect } from "react";
+import { useState, useActionState, useMemo, useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Wind, Flame, Droplets, Sparkles, Activity, FileText, History, Share2, ClipboardList, BookOpen, Leaf, User, FileEdit } from "lucide-react";
 import { SaveButton } from "./shared/SaveButton";
 import { ConsultationHistory } from "./medical-record/ConsultationHistory";
 import { calculateDoshaScoresV2, isV2Snapshot } from "@/domain/ayurveda/dosha-scoring";
-import { saveConsultation, SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/_actions/consultation";
+import { saveConsultationAction, type ConsultationActionState, type SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/_actions/consultation";
 import type { DecryptedConsultation } from "@/services/consultation.service";
 import type { DecryptedPatientProfile } from "@/services/patient.service";
 import { DEFAULT_PHYSICAL_EXAM } from "@/domain/ayurveda/physical-exam";
@@ -44,11 +44,13 @@ export function PatientWorkspaceTabs({
   studyCatalog,
   initialStudies
 }: PatientWorkspaceTabsProps) {
-  // --- UI-only state (not form data) ---
+  // --- UI-only state ---
   const [activeTab, setActiveTab] = useState("historia");
-  const [isPending, startTransition] = useTransition();
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const [state, consultationAction, isPending] = useActionState<ConsultationActionState, SaveConsultationInput>(
+    saveConsultationAction,
+    null
+  );
 
   // --- Form initialization ---
   const initialDistributions = (() => {
@@ -113,56 +115,45 @@ export function PatientWorkspaceTabs({
   // --- Unsaved changes protection ---
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty && !isSuccess) {
+      if (isDirty && !state?.success) {
         e.preventDefault();
         e.returnValue = "";
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty, isSuccess]);
+  }, [isDirty, state?.success]);
 
   // --- Save handler ---
   const handleSave = () => {
-    setErrorMsg(null);
-    setIsSuccess(false);
     const data = methods.getValues();
 
     const vataFinal = data.vataFinal !== null ? data.vataFinal : suggestedScores.vata;
     const pittaFinal = data.pittaFinal !== null ? data.pittaFinal : suggestedScores.pitta;
     const kaphaFinal = data.kaphaFinal !== null ? data.kaphaFinal : suggestedScores.kapha;
 
-    startTransition(async () => {
-      const input: SaveConsultationInput = {
-        patientId: data.patientId,
-        appointmentId: data.appointmentId,
-        symptomSnapshot: { version: 2 as const, distributions: data.symptomSnapshot.distributions },
-        vataFinal,
-        pittaFinal,
-        kaphaFinal,
-        nutritionPlan: data.nutritionPlan,
-        phytotherapy: data.phytotherapy,
-        dailyRoutine: data.dailyRoutine,
-        agniType: data.agniType,
-        amaLevel: data.amaLevel,
-        notes: data.notes,
-        anamnesis: null,
-        diagnosis: data.diagnosis,
-        studies: data.studies
-          .filter(s => s.value.trim() !== "")
-          .map(s => ({ studyName: s.studyName, value: s.value })),
-        physicalExam: hasPhysicalExamChanges ? data.physicalExam : null,
-      };
+    const input: SaveConsultationInput = {
+      patientId: data.patientId,
+      appointmentId: data.appointmentId,
+      symptomSnapshot: { version: 2 as const, distributions: data.symptomSnapshot.distributions },
+      vataFinal,
+      pittaFinal,
+      kaphaFinal,
+      nutritionPlan: data.nutritionPlan,
+      phytotherapy: data.phytotherapy,
+      dailyRoutine: data.dailyRoutine,
+      agniType: data.agniType,
+      amaLevel: data.amaLevel,
+      notes: data.notes,
+      anamnesis: null,
+      diagnosis: data.diagnosis,
+      studies: data.studies
+        .filter(s => s.value.trim() !== "")
+        .map(s => ({ studyName: s.studyName, value: s.value })),
+      physicalExam: hasPhysicalExamChanges ? data.physicalExam : null,
+    };
 
-      const result = await saveConsultation(input);
-
-      if (result.success) {
-        setIsSuccess(true);
-        setTimeout(() => setIsSuccess(false), 3000);
-      } else {
-        setErrorMsg(result.error || "Algo falló al guardar.");
-      }
-    });
+    consultationAction(input);
   };
 
   return (
@@ -195,9 +186,9 @@ export function PatientWorkspaceTabs({
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1 overflow-hidden">
 
           {/* Error Notification if any */}
-          {errorMsg && (
+          {state && !state.success && state.error && (
             <div className="mx-10 mt-6 mb-2 p-4 bg-red-50 text-red-600 rounded-xl border border-red-200 text-sm font-medium shrink-0">
-               Error: {errorMsg}
+               Error: {state.error}
             </div>
           )}
 
@@ -263,7 +254,7 @@ export function PatientWorkspaceTabs({
 
                <SaveButton
                  isPending={isPending}
-                 isSuccess={isSuccess}
+                 isSuccess={state?.success ?? false}
                  onClick={handleSave}
                />
              </div>
