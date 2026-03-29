@@ -7,15 +7,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { User, Activity, Heart } from "lucide-react";
 import { ProfileFormSection } from "./shared/ProfileFormSection";
 import type { DecryptedPatientProfile } from "@/services/patient.service";
-import { savePatientProfileAction, type ProfileActionState } from "@/app/portal/(admin)/pacientes/[id]/_actions/profile";
+import { savePatientProfileAction } from "@/app/portal/(admin)/pacientes/[id]/_actions/profile";
+import type { ActionState } from "@/lib/action-wrapper";
 import { PatientProfileSchema, type SavePatientProfileInput } from "@/app/portal/(admin)/pacientes/[id]/_schemas/profile";
+import { GENDER_LABELS, BLOOD_TYPE_LABELS } from "@/constants/enum-labels";
+import { Gender, BloodType } from "@prisma/client";
 
 interface PatientProfileFormProps {
   patient: DecryptedPatientProfile;
 }
 
 export function PatientProfileForm({ patient }: PatientProfileFormProps) {
-  const [state, formAction, isPending] = useActionState<ProfileActionState, SavePatientProfileInput>(
+  const [state, formAction, isPending] = useActionState<ActionState, SavePatientProfileInput>(
     savePatientProfileAction,
     null
   );
@@ -37,8 +40,8 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
       email: patient.email,
       phone: patient.phone || '',
       dateOfBirth: patient.dateOfBirth ? patient.dateOfBirth.toISOString().split('T')[0] : '',
-      gender: patient.gender || '',
-      bloodType: patient.bloodType || '',
+      gender: patient.gender ?? null,
+      bloodType: patient.bloodType ?? null,
       occupation: patient.occupation || '',
       address: patient.address || '',
       dni: patient.dni || '',
@@ -123,10 +126,9 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
                  className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                >
                  <option value="">Seleccionar...</option>
-                 <option value="Femenino">Femenino</option>
-                 <option value="Masculino">Masculino</option>
-                 <option value="Otro">Otro</option>
-                 <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+                 {(Object.values(Gender) as Gender[]).map((key) => (
+                   <option key={key} value={key}>{GENDER_LABELS[key]}</option>
+                 ))}
                </select>
              </div>
 
@@ -137,14 +139,9 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
                  className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full appearance-none shadow-sm cursor-pointer"
                >
                  <option value="">Desconocido</option>
-                 <option value="A+">A+</option>
-                 <option value="A-">A-</option>
-                 <option value="B+">B+</option>
-                 <option value="B-">B-</option>
-                 <option value="AB+">AB+</option>
-                 <option value="AB-">AB-</option>
-                 <option value="O+">O+</option>
-                 <option value="O-">O-</option>
+                 {(Object.values(BloodType) as BloodType[]).map((key) => (
+                   <option key={key} value={key}>{BLOOD_TYPE_LABELS[key]}</option>
+                 ))}
                </select>
              </div>
 

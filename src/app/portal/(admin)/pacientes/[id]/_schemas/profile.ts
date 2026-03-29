@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Gender, BloodType } from "@prisma/client";
 
 export const PatientProfileSchema = z.object({
   patientId: z.string().uuid(),
@@ -6,8 +7,8 @@ export const PatientProfileSchema = z.object({
   email: z.string().email("Email inválido"),
   phone: z.string().optional().nullable(),
   dateOfBirth: z.string().optional().nullable(),
-  gender: z.string().optional().nullable(),
-  bloodType: z.string().optional().nullable(),
+  gender: z.nativeEnum(Gender).optional().nullable(),
+  bloodType: z.nativeEnum(BloodType).optional().nullable(),
   occupation: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
   dni: z.string().optional().nullable(),
