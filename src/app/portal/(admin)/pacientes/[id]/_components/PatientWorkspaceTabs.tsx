@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useActionState, useMemo, useEffect } from "react";
+import { useState, useActionState, useMemo, useEffect, useTransition } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { Wind, Flame, Droplets, Sparkles, Activity, FileText, History, Share2, ClipboardList, BookOpen, Leaf, User, FileEdit } from "lucide-react";
 import { SaveButton } from "./shared/SaveButton";
 import { ConsultationHistory } from "./medical-record/ConsultationHistory";
 import { calculateDoshaScoresV2, isV2Snapshot } from "@/domain/ayurveda/dosha-scoring";
-import { saveConsultationAction, type ConsultationActionState, type SaveConsultationInput } from "@/app/portal/(admin)/pacientes/[id]/_actions/consultation";
-import type { DecryptedConsultation } from "@/services/consultation.service";
+import { saveConsultationAction, type ConsultationActionState } from "@/app/portal/(admin)/pacientes/[id]/_actions/consultation";
+import type { DecryptedConsultation, SaveConsultationInput } from "@/services/consultation.service";
 import type { DecryptedPatientProfile } from "@/services/patient.service";
 import { DEFAULT_PHYSICAL_EXAM } from "@/domain/ayurveda/physical-exam";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -46,6 +46,7 @@ export function PatientWorkspaceTabs({
 }: PatientWorkspaceTabsProps) {
   // --- UI-only state ---
   const [activeTab, setActiveTab] = useState("historia");
+  const [, startTransition] = useTransition();
 
   const [state, consultationAction, isPending] = useActionState<ConsultationActionState, SaveConsultationInput>(
     saveConsultationAction,
@@ -153,7 +154,7 @@ export function PatientWorkspaceTabs({
       physicalExam: hasPhysicalExamChanges ? data.physicalExam : null,
     };
 
-    consultationAction(input);
+    startTransition(() => consultationAction(input));
   };
 
   return (

@@ -1,8 +1,7 @@
 "use server";
 
-import { saveConsultationData, SaveConsultationInput } from "@/services/consultation.service";
-
-export type { SaveConsultationInput };
+import { saveConsultationData } from "@/services/consultation.service";
+import type { SaveConsultationInput } from "@/services/consultation.service";
 
 export type ConsultationActionState = { success: boolean; error?: string } | null;
 
