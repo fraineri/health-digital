@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useActionState, useMemo, useEffect, useTransition } from "react";
+import { toast } from "sonner";
 import { useForm, FormProvider } from "react-hook-form";
 import { Wind, Flame, Droplets, Sparkles, Activity, FileText, History, Share2, ClipboardList, BookOpen, Leaf, User, FileEdit } from "lucide-react";
 import { SaveButton } from "./shared/SaveButton";
@@ -113,6 +114,16 @@ export function PatientWorkspaceTabs({
     return prev?.physicalExam ?? null;
   }, [historicalConsultations, initialData?.id]);
 
+  // --- Toast notifications ---
+  useEffect(() => {
+    if (!state) return;
+    if (state.success) {
+      toast.success(state.message);
+    } else {
+      toast.error(state.error ?? state.message);
+    }
+  }, [state]);
+
   // --- Unsaved changes protection ---
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -185,13 +196,6 @@ export function PatientWorkspaceTabs({
 
         {/* Tabs Orchestrator */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1 overflow-hidden">
-
-          {/* Error Notification if any */}
-          {state && !state.success && state.error && (
-            <div className="mx-10 mt-6 mb-2 p-4 bg-red-50 text-red-600 rounded-xl border border-red-200 text-sm font-medium shrink-0">
-               Error: {state.error}
-            </div>
-          )}
 
           {/* Tab Bar */}
           <div className="px-10 pt-6 border-b border-border/40 bg-white/60 backdrop-blur sticky top-0 z-10 shrink-0">

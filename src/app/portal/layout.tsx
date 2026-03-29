@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './portal.css';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: 'Portal Interno',
@@ -17,6 +18,7 @@ export default function PortalLayout({
     <html lang="es">
       <body className="antialiased text-slate-900 bg-slate-50 min-h-screen">
         {children}
+        <Toaster position="bottom-right" richColors closeButton />
       </body>
     </html>
   );

@@ -1,13 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { User, FileText, Stethoscope } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type { DecryptedPatientProfile } from "@/services/patient.service";
 import { PhysicalExamData } from "@/domain/ayurveda/physical-exam";
 import { DatosPerfilSubTab } from "./historia-clinica/DatosPerfilSubTab";
-import { EstudiosComplementariosSubTab } from "./historia-clinica/EstudiosComplementariosSubTab";
-import { ExamenFisicoSubTab } from "./historia-clinica/ExamenFisicoSubTab";
+import { SubTabSkeleton } from "../shared/SubTabSkeleton";
+
+const EstudiosComplementariosSubTab = lazy(() =>
+  import('./historia-clinica/EstudiosComplementariosSubTab').then(m => ({
+    default: m.EstudiosComplementariosSubTab
+  }))
+);
+const ExamenFisicoSubTab = lazy(() =>
+  import('./historia-clinica/ExamenFisicoSubTab').then(m => ({
+    default: m.ExamenFisicoSubTab
+  }))
+);
 
 interface HistoriaClinicaTabProps {
   patient: DecryptedPatientProfile;
@@ -54,10 +64,14 @@ export function HistoriaClinicaTab({ patient, studyCatalog, previousExam }: Hist
           <DatosPerfilSubTab patient={patient} />
         </TabsContent>
         <TabsContent value="estudios" forceMount className={contentClassName}>
-          <EstudiosComplementariosSubTab studyCatalog={studyCatalog} />
+          <Suspense fallback={<SubTabSkeleton />}>
+            <EstudiosComplementariosSubTab studyCatalog={studyCatalog} />
+          </Suspense>
         </TabsContent>
         <TabsContent value="examen" forceMount className={contentClassName}>
-          <ExamenFisicoSubTab previousExam={previousExam} />
+          <Suspense fallback={<SubTabSkeleton />}>
+            <ExamenFisicoSubTab previousExam={previousExam} />
+          </Suspense>
         </TabsContent>
       </div>
     </Tabs>

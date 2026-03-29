@@ -3,17 +3,25 @@
 import { saveConsultationData } from "@/services/consultation.service";
 import type { SaveConsultationInput } from "@/services/consultation.service";
 
-export type ConsultationActionState = { success: boolean; error?: string } | null;
+export type ConsultationActionState = { success: boolean; message: string; error?: string } | null;
 
 export async function saveConsultation(
   input: SaveConsultationInput
-): Promise<{ success: boolean; error?: string }> {
-  return saveConsultationData(input);
+): Promise<ConsultationActionState> {
+  const result = await saveConsultationData(input);
+  return {
+    ...result,
+    message: result.success ? "Consulta guardada con éxito" : (result.error ?? "Error al guardar la consulta"),
+  };
 }
 
 export async function saveConsultationAction(
   _prevState: ConsultationActionState,
   input: SaveConsultationInput
 ): Promise<ConsultationActionState> {
-  return saveConsultationData(input);
+  const result = await saveConsultationData(input);
+  return {
+    ...result,
+    message: result.success ? "Consulta guardada con éxito" : (result.error ?? "Error al guardar la consulta"),
+  };
 }

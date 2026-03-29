@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User, Activity, Heart } from "lucide-react";
@@ -18,6 +19,15 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
     savePatientProfileAction,
     null
   );
+
+  useEffect(() => {
+    if (!state) return;
+    if (state.success) {
+      toast.success(state.message);
+    } else {
+      toast.error(state.error ?? state.message);
+    }
+  }, [state]);
 
   const { register, handleSubmit, formState: { errors, isDirty } } = useForm<SavePatientProfileInput>({
     resolver: zodResolver(PatientProfileSchema),
@@ -59,11 +69,6 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
           Información administrativa pre-carga y cuestionario estático del paciente.
         </p>
 
-        {state && !state.success && state.error && (
-          <div className="mt-4 p-3 bg-red-50 text-red-600 rounded-xl border border-red-200 text-sm font-medium">
-            {state.error}
-          </div>
-        )}
       </div>
 
       {/* Form Content */}
@@ -78,7 +83,7 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
                  {...register('name')}
                  className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm"
                />
-               {errors.name && <span className="text-xs text-red-500">{errors.name.message}</span>}
+               {errors.name && <span className="text-xs text-red-500" role="alert">{errors.name.message}</span>}
                {patient.profileSource === 'CAL_COM' && (
                  <span className="text-[10px] text-slate-400">Importado desde Cal.com</span>
                )}
@@ -90,7 +95,7 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
                  {...register('email')} type="email"
                  className="h-11 bg-white border border-border/60 rounded-xl px-4 text-slate-700 font-medium focus:ring-2 focus:ring-primary/20 outline-none w-full shadow-sm"
                />
-               {errors.email && <span className="text-xs text-red-500">{errors.email.message}</span>}
+               {errors.email && <span className="text-xs text-red-500" role="alert">{errors.email.message}</span>}
              </div>
 
              <div className="space-y-1.5 flex flex-col">
@@ -297,7 +302,6 @@ export function PatientProfileForm({ patient }: PatientProfileFormProps) {
            Actualizado: {patient.lastProfileUpdate ? new Date(patient.lastProfileUpdate).toLocaleDateString('es-AR') : 'Nunca'}
          </span>
          <div className="flex items-center gap-4">
-           {state?.success && <span className="text-sm font-bold text-primary">¡Guardado con éxito!</span>}
            <button
              type="submit"
              disabled={isPending || !isDirty}
