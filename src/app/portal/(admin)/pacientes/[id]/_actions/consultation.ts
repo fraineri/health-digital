@@ -4,8 +4,6 @@ import { auth } from "@/auth";
 import { type ActionState } from "@/lib/action-wrapper";
 import { saveConsultationData, type SaveConsultationInput } from "@/services/consultation.service";
 
-export type { ActionState };
-
 export async function saveConsultationAction(
   _prevState: ActionState,
   input: SaveConsultationInput

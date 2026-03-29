@@ -16,9 +16,10 @@ export function NavigationDrawer({ userName }: NavigationDrawerProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button 
+        <button
           className="fixed top-5 left-5 z-[45] p-2.5 rounded-xl bg-sidebar hover:bg-[#202634] shadow-md border border-sidebar-foreground/10 transition-all flex items-center justify-center group"
           aria-label="Toggle Menu"
+          suppressHydrationWarning
         >
           <Menu className="w-5 h-5 text-sidebar-foreground group-hover:text-white transition-transform group-hover:scale-110" />
         </button>

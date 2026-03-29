@@ -5,8 +5,6 @@ import { type ActionState } from "@/lib/action-wrapper";
 import { savePatientProfileData } from "@/services/patient.service";
 import { PatientProfileSchema, type SavePatientProfileInput } from "../_schemas/profile";
 
-export type { ActionState };
-
 export async function savePatientProfileAction(
   _prevState: ActionState,
   data: SavePatientProfileInput

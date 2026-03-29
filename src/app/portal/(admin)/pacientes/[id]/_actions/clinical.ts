@@ -5,8 +5,6 @@ import { auth } from "@/auth";
 import { type ActionState } from "@/lib/action-wrapper";
 import { saveAgniType, saveAmaLevel } from "@/services/consultation.service";
 
-export type { ActionState };
-
 export async function saveAgniTypeAction(
   _prevState: ActionState,
   input: { appointmentId: string; agniType: AgniType }
